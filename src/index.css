@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.loginStyle{
+  
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center top;
+}
+.cmpColor{
+  background-color: #004064;
+}
+
+.calibri{
+  font-family: 'calibri';
+}
+
+table{
+  border-collapse: collapse;
+  border-spacing: 0;
+  user-select: text;
+}
+th, td{
+  padding: 5px 10px;
+  border: 1px solid #000;
+}
+
+.redHover:hover{
+  color: red;
+}
+
+.blueHover:hover{
+  color:steelblue;
+}
+
+.formatCol{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.colEnd{
+  align-items:flex-end;
+}
+
+.colStart{
+  align-items:flex-start;
+}
+
+.full{
+  height:100%;
+}
+
