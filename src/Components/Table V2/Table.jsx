@@ -47,8 +47,7 @@ function Table(props) {
         <table className="mx-1">
             <Thead theme={`${props.theme}`} heads={heads} clicked={handleClickHead}/>
             <Tbody heads={heads} values={values} keyName={props.keyName}/>
-            {(()=>{
-                
+            {(()=>{                
                 if(props.foots!==undefined)return <Tfoot theme={props.theme} heads={heads} values={props.foots} keyName={props.keyName}/>
             })()}
         </table>

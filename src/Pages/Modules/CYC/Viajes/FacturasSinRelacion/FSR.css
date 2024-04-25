@@ -1,0 +1,30 @@
+.contenedor {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px; /* Ajusta el margen superior según sea necesario */
+}
+
+.columnas {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px; /* Espacio entre las columnas */
+}
+
+.columnas div {
+ margin: 5px;
+}
+
+.contenedor button {
+  padding: 10px 20px;
+  background-color: #004064; /* Cambia el color de fondo según tu diseño */
+  color: #fff; /* Cambia el color del texto según tu diseño */
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.contenedor button:hover {
+  background-color: #002235; /* Cambia el color de fondo del botón al pasar el mouse */
+}
+
