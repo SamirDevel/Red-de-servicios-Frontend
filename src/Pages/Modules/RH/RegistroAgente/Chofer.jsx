@@ -14,6 +14,7 @@ function Chofer() {
   const [calle, setCalle] = useState('')
   const [rfc, setRfc] = useState('')
   const [licencia, setLicencia] = useState('')
+  const [vigencia, setVigencia] = useState('')
   const [exterior, setExterior] = useState('')
   const [interior, setInterior] = useState('')
   const [colonia, setColonia] = useState('')
@@ -45,6 +46,7 @@ function Chofer() {
     else if(codigo.length<3)errores.push('El codigo debe tener 3 digitos');
     if(rfc=='')errores.push('Debe ingresar el rfc');
     if(licencia=='')errores.push('Debe ingresar la licencia');
+    if(vigencia=='')errores.push('Debe ingresar la vigencia de la licencia');
     if(calle=='')erroresDireccion.push('Calle');
     if(exterior=='')erroresDireccion.push('Exterior');
     if(colonia=='')erroresDireccion.push('Colonia');
@@ -73,6 +75,7 @@ function Chofer() {
         codigo:`${prefijo}${codigo}`,
         rfc,
         licencia,
+        vigencia,
         calle,
         exterior,
         interior:interior!==''?interior:undefined,
@@ -167,6 +170,8 @@ function Chofer() {
               <label>RFC:</label>
               <span className="my-2"/>
               <label>Licencia:</label>
+              <span className="my-2"/>
+              <label>Vigencia:</label>
             </div>
 
             <div className={`${formatColStart}`}>
@@ -184,6 +189,8 @@ function Chofer() {
               <Input type="text" change={e=>handdleChangeRfc(e.target.value)} value={rfc} />
               <span className="my-2"/>
               <Input type="text" change={e=>setLicencia(e.target.value)} value={licencia.toUpperCase()} />
+              <span className="my-2"/>
+              <Input type="date" change={e=>setVigencia(e.target.value)} value={vigencia} custom={'w-full'} />
             </div>
           </div>
 

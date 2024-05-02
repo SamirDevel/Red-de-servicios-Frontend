@@ -14,6 +14,7 @@ function Chofer() {
     const [calle, setCalle] = useState('')
     const [rfc, setRfc] = useState('')
     const [licencia, setLicencia] = useState('')
+    const [vigencia, setVigencia] = useState('')
     const [exterior, setExterior] = useState('')
     const [interior, setInterior] = useState('')
     const [colonia, setColonia] = useState('')
@@ -51,6 +52,7 @@ function Chofer() {
             setNombre(choferE['nombre']);
             setRfc(choferE['segmento1']);
             setLicencia(choferE['txt1']);
+            setVigencia(fns.dateString(new Date(choferE['vigencia'])))
             setCalle(dom['calle']);
             setExterior(dom['exterior']);
             setInterior(dom['interior']);
@@ -69,6 +71,7 @@ function Chofer() {
         async function getChoferData(){
             if(codigo!==''){
                 const respuesta = await fns.GetData(`recursos.humanos/chofer/${codigo}`)
+                console.log(respuesta)
                 if(respuesta['mensaje']===undefined)setChoferE(respuesta);
                 else alert(respuesta['mensaje'])
             }else setChoferE('')
@@ -88,6 +91,7 @@ function Chofer() {
                 codigo,
                 rfc,
                 licencia,
+                vigencia,
                 calle,
                 exterior,
                 interior,
@@ -213,6 +217,8 @@ function Chofer() {
                         <label>RFC:</label>
                         <span className="my-2"/>
                         <label>Licencia:</label>
+                        <span className="my-2"/>
+                        <label>Vigencia:</label>
                     </div>
                     <div className={`${formatColStart}`}>
                         <Input type="text" change={e=>setNombre(e.target.value)} value={nombre}/>
@@ -226,6 +232,8 @@ function Chofer() {
                         <Input type="text" change={e=>handdleChangeRfc(e.target.value)} value={rfc} />
                         <span className="my-2"/>
                         <Input type="text" change={e=>setLicencia(e.target.value)} value={licencia.toUpperCase()} />
+                        <span className="my-2"/>
+                        <Input type="date" change={e=>setVigencia(e.target.value)} value={vigencia} custom={'w-full'}/>
                     </div>
                 </div>
                 <div className="flex flex-row justify-center mr-5">
