@@ -5,6 +5,8 @@ import {RiWhatsappLine} from 'react-icons/ri';
 import * as Functions from '../../../../Functions.js';
 import Input from "../../../../Components/Input.jsx";
 import IconInput from "../../../../Components/IconInput.jsx";
+import InputCantidad from '../../.././../Components/InputCantidad.jsx'
+
 function Dcoumento() {
   const params = useParams();
   //console.log(params['serie'][params['serie'].length-1]);
@@ -15,6 +17,8 @@ function Dcoumento() {
   const [tel2, setTel2] = useState('');
   const [correo, setCorreo] = useState('');
   const [contrarecivo, setContrarecivo] = useState('');
+  const [diasCredito, setDiasCredito] = useState(0);
+  const [limiteCredito, setLimiteCredito] = useState(0);
   const [formaPago, setFormaPago] = useState('');
   const [observacion, setObservacion] = useState('');
   const [originalObs, setOriginal] = useState('');
@@ -40,6 +44,8 @@ useEffect(()=>{
       //console.log(cliente.current['NOMBRE']);
       setCorreo(cliente.current['mail1']);
       setContrarecivo(cliente.current['txt4']);
+      setDiasCredito(cliente.current['diasCreditoCliente']);
+      setLimiteCredito(cliente.current['limiteCreditoCliente']);
       setFormaPago(cliente.current['txt5']);
       setTel1(cliente.current['domicilios'][0]['tel1']);
       setTel2(cliente.current['domicilios'][0]['tel2']);
@@ -76,9 +82,21 @@ useEffect(()=>{
       }
     }
     let url=`/credito.cobranza/modificar/corp/${params['serie']}/${params['folio']}`;
-    const respuesta = await Functions.PostData(url,{tel1,tel2,correo,contrarecivo,formaPago,observacion, clasificacion:clasificacionActiva, activo});
+    const respuesta = await Functions.PostData(url,{
+      tel1,
+      tel2,
+      correo,
+      contrarecivo,
+      formaPago,
+      observacion, 
+      clasificacion:clasificacionActiva, 
+      activo,
+      limiteCredito:parseFloat(limiteCredito),
+      diasCredito:parseInt(diasCredito)
+    });
     console.log(respuesta);
-    alert(respuesta['mensaje']);
+    if(respuesta['mensaje'] !== undefined)alert(respuesta['mensaje']);
+    else alert(respuesta)
   }
   
   function setClasificacionCliente(){
@@ -92,6 +110,8 @@ useEffect(()=>{
   function restablecer(e){
     setCorreo(cliente.current['mail1']);
     setContrarecivo(cliente.current['txt4']);
+    setDiasCredito(cliente.current['diasCreditoCliente']);
+    setLimiteCredito(cliente.current['limiteCreditoCliente']);
     setFormaPago(cliente.current['txt5']);
     setTel1(cliente.current['domicilios'][0]['tel1']);
     setTel2(cliente.current['domicilios'][0]['tel2']);
@@ -138,7 +158,9 @@ useEffect(()=>{
               <IconInput icon={<RiWhatsappLine size={25}/>} id='tel2' placeholder='Telefono' value={tel2} change={e=>{validateNumber(e,setTel2)}}/>
             </div>
             <label className=" h-7"> Correo:</label>
-              <Input customRef={correoRef} id='correo' type='email' value={correo} change={e=>{setCorreo(e.target.value)}}/> 
+            <Input customRef={correoRef} id='correo' type='email' value={correo} change={e=>{setCorreo(e.target.value)}}/> 
+            <label className=" h-7"> Limite de credito:</label>
+            <InputCantidad value={limiteCredito} fn={(value)=>{setLimiteCredito(value)}} custom={'px-2 rounded-xl border-solid border-2 border-black h-7'}/> 
             <br />
           </div>
           <div className=" flex flex-col">
@@ -147,6 +169,8 @@ useEffect(()=>{
             <Input id='formaPago' value={formaPago} change={e=>{setFormaPago(e.target.value)}}/> 
             <label className="m-1">Días para llevar contra-recibo: </label>
             <Input id='contrarecivo' value={contrarecivo} change={e=>{setContrarecivo(e.target.value)}}/>
+            <label className=" h-7"> Dias de credito:</label>
+            <Input type={'number'} value={diasCredito} change={(e)=>{setDiasCredito(e.target.value)}} custom={'px-2 rounded-xl border-solid border-2 border-black h-7'}/> 
             <div>
               <button 
               className=" bg-blue-800 text-white font-sans rounded-xl w-24 h-7 hover:text-blue-800 hover:bg-white hover:border-blue-800 hover:border-2 my-2 self-center"

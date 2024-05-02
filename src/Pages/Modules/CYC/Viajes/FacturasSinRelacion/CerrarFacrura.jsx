@@ -1,22 +1,47 @@
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { fns } from '../../../../../Functions';
 
-import React, { useState } from 'react';
 import "./FSR.css";
 
 function CerrarFacruna() {
+  //parametros url
+  const params = useParams();
+  console.log(params);
   //Variables a utilizar
-  const [nombre, setNombre] = useState('');
   const [factura, setFactura] = useState('');
   const [motivo, setMotivo] = useState('');
   const [error, setError] = useState('');
+  
+  async function handdleSubmit(e) {
+    e.preventDefault()
+      const respuesta = await fns.PostData(`credito.cobranza/viajes/factura/cerrar/${params.serie}/${params.folio}`, {
+        motivo,
+      })
+      if(respuesta['mensaje']!==undefined)alert(respuesta['mensaje'])
+      else alert(respuesta)
+  }
 
+  useEffect(()=>{
+    async function getFac(){
+      const respuesta = await fns.GetData(`credito.cobranza/viajes/facturas/sin_relacion${params.concepto==='revisado'?'/cerradas':''}?serie=${params.serie}&folio=${params.folio}`);
+      console.log(respuesta);
+      setFactura(respuesta[0])
+      setMotivo(respuesta[0].motivo)
+    }
+    getFac();
+  }, [])
   //Validacion de campos
-  const handleValidation = () => {
-    if (!nombre.trim() || !factura.trim() || !motivo.trim()) {
+  async function handleValidation(){
+    if (!motivo.trim()) {
       setError('Por favor, complete todos los campos');
     } else {
-      setError('Datos enviados');
       //Envio de datos
-    }
+      const respuesta = await fns.PostData(`credito.cobranza/viajes/factura/cerrar/${params.serie}/${params.folio}`, {
+        motivo,
+      })
+      if(respuesta['mensaje']!==undefined)alert(respuesta['mensaje'])
+      else alert(respuesta)    }
   };
 
   return (
@@ -24,23 +49,11 @@ function CerrarFacruna() {
       <div className="form-container m-7">
         <div className="form-group mt-2">
           <label htmlFor="nombre">Nombre:</label>
-          <input
-            type="text"
-            id="nombre"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            className="block w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-400"
-          />
+          <label>{`${factura!==''?factura.nombre:''}`}</label>
         </div>
         <div className="form-group mt-2">
           <label htmlFor="factura">Factura:</label>
-          <input
-            type="text"
-            id="factura"
-            value={factura}
-            onChange={(e) => setFactura(e.target.value)}
-            className="block w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-400"
-          />
+          <label>{`${factura.serie}-${factura.folio}`}</label>
         </div>
       </div>
       <div className="text-area-container justify-center mx-7">
@@ -50,6 +63,8 @@ function CerrarFacruna() {
           rows="4"
           placeholder="Escribe aquí..."
           className="w-full p-2 border rounded-md resize-none"
+          onChange={(e) => { setMotivo(e.target.value)} } 
+          value={motivo}
         />
       </div>
   

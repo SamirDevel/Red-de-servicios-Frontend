@@ -10,10 +10,14 @@ import makePDFCompleto from './VistaPDF.JS';
 import OpenButtonIcon from '../../../../Components/OpenButtonIcon'
 import EditButtonIcon from '../../../../Components/EditButtonIcon'
 import CancelButtonIcon from '../../../../Components/CancelButtonIcon';
+import LabelInput from '../../../../Components/LabelInput'
+
 function Consultar() {
     const [viajes, setVIajes] = useState([]);
     const [objetos, setObjetos] = useState([]);
     const [estatus, setEstatus] = useState('');
+    const [serieFactura, setSerieFactura] = useState('');
+    const [folioFactura, setFolioFactura] = useState('');
     const heads = [
         {text:'Finalizar', type:'string'},
         {text:'Editar', type:'string'},
@@ -62,9 +66,17 @@ function Consultar() {
     return(
         <div className='flex flex-col items-center'>
             <br />
-            <Filtros area={'credito.cobranza'} setDocs={setVIajes} filtro={{estatus:estatus!=='-1'?estatus:undefined}}>
+            <Filtros area={'credito.cobranza'} setDocs={setVIajes} filtro={{
+                estatus:estatus!=='-1'?estatus:undefined,
+                serieFactura:serieFactura!==''?serieFactura:undefined,
+                folioFactura:folioFactura!==''?folioFactura:undefined,
+            }}>
                 <br />
                 <LabelSelect text='Estatus' list={['PENDIENTE', 'COMPLETADO', 'CANCELADO']} id='estatus' fn={e=>setEstatus(e.target.value)} vale={estatus} custom='w-48'/>
+                <br />
+                <LabelInput text='Serie de Factura' change={e=>setSerieFactura(e.target.value)} vale={serieFactura} custom='w-48'/>
+                <br />
+                <LabelInput text='Folio de Factura' change={e=>setFolioFactura(e.target.value)} vale={folioFactura} custom='w-48'/>
                 <br />
             </Filtros>
             <br />

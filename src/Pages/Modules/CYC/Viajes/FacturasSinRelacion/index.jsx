@@ -16,7 +16,9 @@ const Index = () => {
   const [serie, setSerie] = useState("");
   const [series, setSeries] = useState([]);
   const [folio, setFolio] = useState("");
-  const [expedicion, setExpedicion] = useState("");
+  const [fechaI, setFechaI] = useState("");
+  const [fechaF, setFechaF] = useState("");
+  const [tipoDoc, setTpoDoc] = useState("");
   const [facturas, setFacuras] = useState([]);
   const [objetos, setObjetos] = useState([]);
 
@@ -58,31 +60,43 @@ const Index = () => {
         CLIENTE:factura.nombre,
         TOTAL:factura.total,
         EXPEDICION:fns.dateString(new Date(factura.expedicion)),
-        ABRIR:<OpenButtonIcon size={30} url={`${window.location}/cerrar`}/>,
+        ABRIR:<OpenButtonIcon size={30} url={
+          `${window.location}/cerrar/${factura.serie}/${factura.folio}/${tipoDoc}`
+        } emergente={true}/>,
+        MOTIVO:factura.motivo,
+        REVISION:factura.fecha!==undefined?fns.dateString(new Date(factura.expedicion)):''
       }
     }))
   }, [facturas])
+  useEffect(()=>{
+    setFacuras([])
+  }, [tipoDoc])
 
   async function handdleSubmit(e) {
     e.preventDefault();
-    /*const queryStr = fns.makeUrlQuery({
+    console.log(clienteE)
+    const queryStr = fns.makeUrlQuery({
       serie,
       folio,
-      chofer: choferE["codigo"],
-      vehiculo: vehiculoE["codigo"],
-      ruta: rutaE["codigo"],
-      auxiliar: auxiliarE["codigo"],
-      usuario: usuarioE["usuario"],
       fechaI,
       fechaF,
-      ...filtro,
+      cliente:clienteE.codigo
     });
-    //console.log(queryStr);*/
-    const respuesta = await fns.GetData(`credito.cobranza/viajes/facturas/sin_relacion`);
-    console.log(respuesta);
-    if (respuesta["mensaje"] === undefined) {
-      setFacuras(respuesta);
-    } else alert(respuesta["mensaje"]);
+    //console.log(queryStr);
+    const url = (()=>{
+      const cad = `credito.cobranza/viajes/facturas/sin_relacion`;
+      if(tipoDoc==='pendiente')return cad;
+      if(tipoDoc==='revisado')return `${cad}/cerradas`;
+    })()
+    if(tipoDoc===''){
+      alert('Debe seleccionar un tipo de documento')
+    }else{
+      const respuesta = await fns.GetData(`${url}${queryStr}`);
+      console.log(respuesta);
+      if (respuesta["mensaje"] === undefined) {
+        setFacuras(respuesta);
+      } else alert(respuesta["mensaje"]);
+    }
   }
   return (
     <form
@@ -100,7 +114,7 @@ const Index = () => {
               value={cliente}
               list={clientes}
               fn={(e) => {
-                cliRef.current.childNodes[0].childNodes[0].childNodes[0].blur();
+                cliRef.current.childNodes[1].childNodes[0].childNodes[0].blur();
                 //console.log(divRef.current.childNodes[2].childNodes[1]);
               }}
             />
@@ -116,7 +130,7 @@ const Index = () => {
               value={serie}
               list={series}
               fn={(e) => {
-                seriRef.current.childNodes[0].childNodes[0].childNodes[0].blur();
+                seriRef.current.childNodes[2].childNodes[0].childNodes[0].blur();
                 //console.log(divRef.current.childNodes[2].childNodes[1]);
               }}
             />
@@ -133,13 +147,34 @@ const Index = () => {
             />
           </Div>
 
-          Fecha:
+          Fecha Inicial:
           <div>
             <Input
               type="date"
-              value={expedicion}
-              change={(e) => setExpedicion(e.target.value)}
+              value={fechaI}
+              change={(e) => setFechaI(e.target.value)}
             />
+          </div>
+          Fecha Final:
+          <div>
+            <Input
+              type="date"
+              value={fechaF}
+              change={(e) => setFechaF(e.target.value)}
+            />
+          </div>
+          Tipo de documento:
+          <div className="columnas">
+            <label>
+                <input type="radio" name='documento' value={'pendiente'} onChange={e=>setTpoDoc(e.target.value)}/>
+                <span className="mx-1"/>
+                Sin revisar
+            </label>
+            <label>
+              <input type="radio" name='documento' value={'revisado'} onChange={e=>setTpoDoc(e.target.value)}/>
+              <span className="mx-1"/>
+              Revisado
+            </label>
           </div>
           
         </div>
@@ -148,10 +183,19 @@ const Index = () => {
 
       <BlueButton text="Buscar" fn={handdleSubmit} />
       <br />
-      <Table  theme='bg-blue-950 text-white' colsHeads={heads} list={objetos} manage={setObjetos} />
+      <div className={`${tipoDoc==='pendiente'?'visible':'hidden'}`}>
+        <Table  theme='bg-blue-950 text-white' colsHeads={heads} list={objetos} manage={setObjetos} keyName='FACTURA'/>
+      </div>
+      <div className={`${tipoDoc==='revisado'?'visible':'hidden'}`}>
+        <Table  theme='bg-blue-950 text-white' colsHeads={[
+          ...heads
+          ,{text:'Motivo', type:'string'}
+          ,{text:'Revision', type:'string'}
+        ]} list={objetos} manage={setObjetos} keyName='FACTURA'/>
+      </div>
     </form>
   );
 };
 
 export default Index;
-//keyName='FACTURA'
+//

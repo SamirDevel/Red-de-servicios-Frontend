@@ -1,22 +1,22 @@
 import { useState, useEffect } from "react"
 
-function InputCantidad(props) {
+function InputCantidad({value, fn, custom}) {
     const [cantidad, setCantidad] = useState(0)
     const [cantidadFormateada, setCantidadFormateada] = useState('')
 
     useEffect(()=>{
-        if(props.value!==undefined){
-            setCantidad(props.value.toString())
+        if(value!==undefined){
+            setCantidad(value.toString())
         }
     },[])
 
     useEffect(()=>{
-        props.fn(cantidad);
+        fn(cantidad);
     },[cantidad])
 
     useEffect(()=>{
-        if(props.value!==undefined)handleChange(props.value.toString())
-    },[props.value])
+        if(value!==undefined)handleChange(value.toString())
+    },[value])
 
     function handleChange(old){
         const value = old.replace(/[^0-9.]/g,'')
@@ -42,8 +42,8 @@ function InputCantidad(props) {
         return result
     }
     return (
-        <label className="flex flex-row ml-3">
-            $<input type="text" className='w-20 mr-2' onChange={e=>handleChange(e.target.value)} value={cantidadFormateada}/>
+        <label className={`flex flex-row ml-3`}>
+            $<input type="text" className={`${custom!==undefined?custom:'w-20 mr-2'}`} onChange={e=>handleChange(e.target.value)} value={cantidadFormateada}/>
         </label>
     )
 }

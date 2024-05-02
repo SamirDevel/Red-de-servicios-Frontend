@@ -81,6 +81,7 @@ function Filtros({area, setDocs, children, filtro}) {
 
     async function handdleSubmit(e){
         e.preventDefault();
+        console.log(filtro);
         const queryStr = fns.makeUrlQuery({
             serie,
             folio,

@@ -72,7 +72,7 @@ const cycRoutes = (
       </Route>
       <Route path="sin_relacion">
         <Route index element={<FacturasSinRelacion />}/>
-        <Route path="cerrar" element={<CerrarFacrura />}/>
+        <Route path="cerrar/:serie/:folio/:concepto" element={<CerrarFacrura />}/>
       </Route>
     </Route>
   </Route>
