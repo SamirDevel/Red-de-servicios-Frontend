@@ -1,9 +1,9 @@
 import { RiPlayListAddLine } from "react-icons/ri"
 import IconButton from "./IconButton"
 
-function AddButtonIcon(props) {
+function AddButtonIcon({size, fn}) {
   return (
-    <IconButton icon={<RiPlayListAddLine className="blueHover"/>} fn={props.fn}/>
+    <IconButton icon={<RiPlayListAddLine size={size} className="blueHover"/>} fn={fn}/>
   )
 }
 

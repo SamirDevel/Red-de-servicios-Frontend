@@ -64,6 +64,9 @@ export function moneyFormat(number){
 export function fixed(numero=0){
     return parseFloat(numero.toFixed(2));
 }
+export function fixedString(numero=0){
+    return numero.toFixed(2);
+}
 function addZeroFirst(number){
     return number<10?`0${number}`:number
 }

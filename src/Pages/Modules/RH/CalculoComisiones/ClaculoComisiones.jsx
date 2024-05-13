@@ -21,15 +21,18 @@ function ClaculoComisiones() {
     const [agregados, setAgregados] = useState(0)
     const [guardados, setGuardados] = useState(false)
     const [guardar, setGuardar] = useState(false)
+    const [meta, setMeta] = useState(0)
+    
     const toSave = []
     const comisionHeads = [
         {text:'Agente', type:'string'},
+        {text:'Total',type:'pesos'},
         {text:'Cobranza',type:'pesos'},
+        {text:'% Cobrado',type:'%'},
         {text:'Cobranza sin IVA', type:'pesos'},
-        {text:'A Tiempo',type:'pesos'},
-        {text:'Fuera de Tiempo',type:'pesos'},
         {text:'Esquema de evaluacion',type:'string'},
-        {text:'% Comision',type:'string'},
+        {text:'% Comision',type:'%'},
+        {text:'% Penalizacion',type:'%'},
         {text:'Comision',type:'pesos'},
         {text:'Otros descuentos',type:'pesos'},
         {text:'Anticipo',type:'pesos'},
@@ -39,13 +42,17 @@ function ClaculoComisiones() {
 
     useEffect(()=>{
         async function setData(){
-            const respuesta = await fns.GetData('recursos.humanos/agentes/todos');
+            const respuesta = await Promise.all([
+                fns.GetData('recursos.humanos/agentes/todos'),
+                fns.GetData('recursos.humanos/meta/ventas')
+            ])
             console.log(respuesta)
-            if(respuesta['mensaje']===undefined){
-                setOpciones(respuesta.map(item=>{
+            if(respuesta[0]['mensaje']===undefined){
+                setOpciones(respuesta[0].map(item=>{
                     return {...item, nombreUpper:item.nombre.toUpperCase()};
                 }))
-            }else alert(respuesta['mensaje']);
+                setMeta(respuesta[1]['meta']);
+            }else alert(respuesta[0]['mensaje']);
 
         }
         setData();
@@ -70,15 +77,18 @@ function ClaculoComisiones() {
             const array = agentes.map(agente=>{
                 if(repetidos.indexOf(agente.agente)===-1)repetidos.push(agente.agente);
                 else agente.tipo = 2;
+                const cobrado = agente.aTiempo + agente.fueraTiempo;
+                const cobradoPorcentaje = (cobrado*100/agente.cobranza)
                 const obj={
                     NOMBRE:agente.nombre,
-                    COBRANZA:agente.cobranza,
-                    IVA:(agente.cobranza/1.16),
-                    ATIEMPO:agente.aTiempo,
-                    FUERA:agente.fueraTiempo,
+                    Total:agente.cobranza,
+                    COBRANZA:cobrado,
+                    Porcentaje:cobradoPorcentaje,
+                    IVA:(cobrado/1.16),
                     ESQUEMA:agente.esquema,
                     PORCENTAJE:agente.porcentaje,
-                    COMISION:(agente.cobranza/1.16)*(agente.porcentaje/100),
+                    PENALIZADO:agente.penalizacion,
+                    COMISION:(cobrado/1.16)*((agente.porcentaje-agente.penalizacion)/100),
                     DESCUENTOS:agente.descuentos,
                     ANTICIPADO:agente.anticipo,
                     FALTANTE:agente.faltante,
@@ -134,7 +144,8 @@ function ClaculoComisiones() {
     }
 
     async function saveRegistros(){
-        if(admins.length>0&&deps.length>0){
+        console.log(admins)
+        if(admins.length>0||deps.length>0){
             if(guardados===false){
                 setGuardar(true);
             }else alert('Los regstros ya han sido guardados')
@@ -175,6 +186,12 @@ function ClaculoComisiones() {
         </button>
         <span className='my-1'/>
             <FiltrosComision find={setParams} save={saveRegistros} saved={guardados} agentes={opciones} text='Vendedor'/>
+        <span className='my-1'/>
+        <div className='self-center'>
+            <label className=' font-bold'>Meta de cobranza considerada:</label>
+            <span className='mx-1'/>
+            <label >{meta}%</label>
+        </div>
         <span className='my-1'/>
         <div className='flex flex-col'>
             {getTable()}

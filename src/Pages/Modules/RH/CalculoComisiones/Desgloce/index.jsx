@@ -9,6 +9,7 @@ function index() {
   const [documentos, setDocumentos] = useState([])
   const [objetos, setObjetos] = useState([])
   const [total, setTotal] = useState(0);
+  const [cobranza, setCobranza] = useState(0);
   const [aTiempo, setATIempo] = useState(0);
   const [fueraTiempo, setFueraTiempo] = useState(0);
 
@@ -18,6 +19,7 @@ function index() {
     {text:'Expedicion',type:'string'},
     {text:'Vencimiento',type:'sring'},
     {text:'Total',type:'pesos'},
+    {text:'Por cobrar',type:'pesos'},
     {text:'Cobrado',type:'pesos'},
     {text:'A Tiempo',type:'pesos'},
     {text:'Fuera de Tiempo',type:'pesos'}]
@@ -44,7 +46,8 @@ function index() {
         CLIENTE:doc.nombre!==undefined?doc.nombre:doc.idCliente.nombre,
         EXPEDICION:doc.expedicion.substring(0,10),
         VENCIMIENTO:doc.vencimientoReal!==undefined?doc.vencimientoReal.substring(0,10):doc.vencimientoComision.substring(0,10), 
-        TOTAL:doc.total, 
+        TOTAL:doc.total,
+        COBRANZA:doc.cobranza,
         COBRADO:doc.cobrado, 
         ATIEMPO:doc.aTiempo,
         FUERATIEMPO:doc.fueraTiempo
@@ -53,6 +56,11 @@ function index() {
     setTotal(prev=>{
       let sum = 0
       documentos.forEach(doc=>sum+=doc.cobrado)
+      return sum
+    })
+    setCobranza(prev=>{
+      let sum = 0
+      documentos.forEach(doc=>sum+=doc.cobranza)
       return sum
     })
     setATIempo(prev=>{
@@ -77,6 +85,7 @@ function index() {
     <div className="flex flex-col">
       <label>Facturas asociadas al agente {agente!==undefined?agente.nombre:''}</label>
       <label>Correspondientes al periodo {params['fechaI']} - {params['fechaF']}</label>
+      <label>Total: {fns.moneyFormat(cobranza)}</label>
       <label>Cobrado: {fns.moneyFormat(total)}</label>
       <label className="ml-6">-A tiempo: {fns.moneyFormat(aTiempo)}</label>
       <label className="ml-6">-Fuera de tiempo: {fns.moneyFormat(fueraTiempo)}</label>

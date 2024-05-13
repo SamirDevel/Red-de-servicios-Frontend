@@ -4,6 +4,7 @@ import InputCantidad from "../../../../../Components/InputCantidad";
 import * as fns from '../../../../../Functions';
 import { RxOpenInNewWindow } from 'react-icons/rx'
 import IconButton from "../../../../../Components/IconButton";
+import SelectPenalizacion from "../SelectPenalizacion";
 
 function AgenteRow(props){
     const [ventas, setVentas] = useState(getTotal());
@@ -12,27 +13,28 @@ function AgenteRow(props){
     const [comisionAPagar, setcomisionAPagar] = useState(0);
     const [aTiempo, setAtiempo] = useState(getATiempo());
     const [fueraTiempo, setFueratiempo] = useState(getFueraTiempo());
+    const [cobrado, setCobrado] = useState(0)
+    const [pCobrado, setPCobrado] = useState(0)
+    const [penalizado, setPenalizado] = useState(0)
     const [total, setTotal] = useState(0)
     const [descuentos, setDescuentos] = useState(0)
     const [faltante, setFaltante] = useState(0)
     const [anticipo, setAnticipo] = useState(0)
     const [esquema, setEsquema] = useState('')
-    const [first, setFirst] = useState(false);
     
     useEffect(()=>{
-        setVentasSinIVA(ventas/1.16);
-    }, [ventas])
+        setVentasSinIVA(cobrado/1.16);
+    }, [cobrado])
     useEffect(()=>{
-        setcomisionAPagar(ventasSinIVA*(porcentaje/100))
-    },[porcentaje])
-    
+        setCobrado(aTiempo + fueraTiempo);
+    }, [aTiempo, fueraTiempo])
     useEffect(()=>{
-        if(anticipo===0&&comisionAPagar>0&&first===false){
-            setAnticipo(comisionAPagar/2);
-            setFirst(true);
-        }
-    },[comisionAPagar, anticipo])
-
+        setcomisionAPagar(ventasSinIVA*((porcentaje-penalizado)/100))
+    },[porcentaje, ventasSinIVA, penalizado])
+    useEffect(()=>{
+        setAnticipo(comisionAPagar/2);
+        
+    },[comisionAPagar])
     useEffect(()=>{
         setTotal(comisionAPagar-descuentos)
     },[comisionAPagar, descuentos])
@@ -40,6 +42,9 @@ function AgenteRow(props){
     useEffect(()=>{
         setFaltante(total-anticipo)
     },[anticipo, total])
+    useEffect(()=>{
+        setPCobrado((cobrado*100)/ventas);
+    }, [cobrado, ventas])
 
     function handdleChangeSelect(porcentaje, esquema){
         //console.log(esquema)
@@ -53,10 +58,10 @@ function AgenteRow(props){
             let sum=0;
             dependientes.forEach(dep=>{
                 const agente = dep.codDependiente;
-                sum+=agente.ventas;
+                sum+=agente.cobranza;
             })
             return sum
-        }else return props.agente['ventas']
+        }else return props.agente['cobranza']
     }
 
     function getATiempo(){
@@ -97,6 +102,7 @@ function AgenteRow(props){
             anticipo,
             faltante,
             grupo:props.agente.grupo,
+            penalizacion:penalizado,
             id:props.id
         }
         if(ventas>0)props.fn(obj)
@@ -104,16 +110,17 @@ function AgenteRow(props){
     const array = [
         <td key={`${props.agente.codigo}-0`}>{props.agente.nombre}</td>,
         <td key={`${props.agente.codigo}-1`}>{fns.moneyFormat(ventas)}</td>,
-        <td key={`${props.agente.codigo}-2`}>{fns.moneyFormat(ventasSinIVA)}</td>,
-        <td key={`${props.agente.codigo}-3`}>{fns.moneyFormat(aTiempo)}</td>,
-        <td key={`${props.agente.codigo}-4`}>{fns.moneyFormat(fueraTiempo)}</td>,
+        <td key={`${props.agente.codigo}-2`}>{fns.moneyFormat(cobrado)}</td>,
+        <td key={`${props.agente.codigo}-3`}>{fns.fixedString(pCobrado)}%</td>,
+        <td key={`${props.agente.codigo}-4`}>{fns.moneyFormat(ventasSinIVA)}</td>,
         <td key={`${props.agente.codigo}-5`}><SelectEsquema fn={handdleChangeSelect} ventas={ventasSinIVA} inicial={props.agente.esquema}/></td>,
-        <td key={`${props.agente.codigo}-6`}>{porcentaje}</td>,
-        <td key={`${props.agente.codigo}-7`}>{fns.moneyFormat(comisionAPagar)}</td>,
-        <td className="p-0" key={`${props.agente.codigo}-8`}><InputCantidad value={descuentos} fn={setDescuentos}/></td>,
-        <td className="p-0" key={`${props.agente.codigo}-9`}><InputCantidad value={anticipo} fn={setAnticipo}/></td>,
-        <td key={`${props.agente.codigo}-10`}>{fns.moneyFormat(faltante)}</td>,
-        <td key={`${props.agente.codigo}-11`}>
+        <td key={`${props.agente.codigo}-6`}>{fns.fixedString(porcentaje)} %</td>,
+        <td key={`${props.agente.codigo}-7`}> <SelectPenalizacion cobrado={pCobrado} fn={setPenalizado}/> </td>,
+        <td key={`${props.agente.codigo}-8`}>{fns.moneyFormat(comisionAPagar)}</td>,
+        <td className="p-0" key={`${props.agente.codigo}-9`}><InputCantidad value={descuentos} fn={setDescuentos}/></td>,
+        <td className="p-0" key={`${props.agente.codigo}-10`}><InputCantidad value={anticipo} fn={setAnticipo}/></td>,
+        <td key={`${props.agente.codigo}-11`}>{fns.moneyFormat(faltante)}</td>,
+        <td key={`${props.agente.codigo}-12`}>
             <IconButton icon={ <RxOpenInNewWindow size={25}/>} id={`${props.agente.codigo}`} fn={()=>window.open(`${window.location.href}/desgloce/${props.agente.codigo}/${props.fechaI}/${props.fechaF}/${props.agente.grupo}`,'_blank',)}/>
         </td>,
     ]
