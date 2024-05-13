@@ -27,9 +27,10 @@ function ConsultaPicking() {
     async function handdleSubmit(e){
         e.preventDefault();
         const respuesta = await fns.GetData(`/almacen.inventario/consultar/${ruta!==''?ruta:'NA'}/${empresa}/${fechaI!==''?fechaI:'NA'}/${fechaF!==''?fechaF:'NA'}`);
-            if(respuesta['mensaje']===undefined){
-                setPicking(respuesta);
-            }else alert(respuesta['mensaje'])
+        console.log(respuesta)
+        if(respuesta['mensaje']===undefined){
+            setPicking(respuesta);
+        }else alert(respuesta['mensaje'])
     }
 
     function getData(picked){

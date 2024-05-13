@@ -95,7 +95,7 @@ function Cancelar() {
       else{
         const respuesta = await fns.PostData(`credito.cobranza/viajes/cancelar/${viaje.serie.serie}/${viaje.folio}`,{
           motivo,
-          responsable:responsableE['codigo']
+          responsable:responsableE['codigo']!==undefined?responsableE['codigo']:responsable
         })
         if(respuesta['mensaje']===undefined)alert(respuesta)
         else alert(respuesta['mensaje'])
