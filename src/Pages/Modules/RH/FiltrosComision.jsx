@@ -14,6 +14,9 @@ function FiltrosComision({save, find, saved, agentes, text}) {
     useEffect(()=>{
         fns.setStateE(agente,agentes,'nombreUpper',setAgenteE)
     },[agente])
+    useEffect(()=>{
+        setFin(inicio)
+    },[inicio])
 
     async function handdleSubmit(e){
         e.preventDefault();

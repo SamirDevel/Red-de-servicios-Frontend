@@ -1,9 +1,9 @@
 import IconButton from './IconButton'
 import { AiFillDelete } from "react-icons/ai"
 
-function DeleteButtonIcon(props) {
+function DeleteButtonIcon({size, fn}) {
   return (
-    <IconButton icon={<AiFillDelete size={props.size} className="redHover"/>} fn={props.fn}/>
+    <IconButton icon={<AiFillDelete size={size} className="redHover"/>} fn={fn}/>
   )
 }
 

@@ -40,7 +40,7 @@ function Esquema(props) {
     return (
         <div className="flex flex-col">
             <div className="flx flex-row">
-                <input className=' w-40'
+                <input className=' w-40 font-bold'
                 type="text" placeholder="Esquema" 
                 value={nombre==undefined?'':`${nombre}`} onChange={e=>setNombre(e.target.value)}/>
                 <span className='mx-8'/>

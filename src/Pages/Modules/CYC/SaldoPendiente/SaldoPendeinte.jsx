@@ -18,6 +18,7 @@ function SaldoPendeinte() {
   //states
   const [clientes, setClientes] = useState([]);
   const [cliente, setCliente] = useState('');
+  const [clienteE, setClienteE] = useState('');
   const [clasificacion, setClasificacion] = useState(-1);
   const [clasificaciones, setClasificaciones] = useState([]);
   const [rutas, setRutas] = useState([]);
@@ -52,7 +53,12 @@ function SaldoPendeinte() {
         const respuesta = await Promise.all([Functions.GetData('/clientes/corp'), Functions.GetData(`/agentes/agentes/corp`), Functions.GetData(`/documentos/rutas/corp`),Functions.GetData('/clientes/clasificaciones/corp')]);
         console.log(respuesta);
         if(respuesta[0]['mensaje']===undefined){
-          setClientes(respuesta[0]);
+          setClientes(respuesta[0].map(cli=>{
+            return {
+              ...cli,
+              nombreUpper:`${cli.codigo}-${cli.nombre}`
+            }
+          }));
           setAgentes(respuesta[1]);
           setRutas(respuesta[2]);
           setClasificaciones(respuesta[3].sort((item1,item2)=>{
@@ -80,7 +86,9 @@ function SaldoPendeinte() {
     if(saldo=='Todas')setSaldo(2);
     if(saldo!=-1&&empresa!=-1)setActivo(activo+1);
   },[saldo]);
-
+  useEffect(()=>{
+    Functions.setStateE(cliente,clientes,'nombreUpper',setClienteE)
+  },[cliente])
   useEffect(()=>{
     async function getData(){
       if(initialRef.current!=0){
@@ -96,14 +104,14 @@ function SaldoPendeinte() {
           url += '?';
             url+=makeUrl('fechaIS',fechaI)
             url+=makeUrl('fechaFS',fechaF)
-            url+=makeUrl('propietario',cliente)
+            url+=makeUrl('propietario',clienteE!==''?clienteE.nombre:'')
             url+=makeUrl('agente',agente)
             url+=makeUrl('ruta',ruta)
             //makeUrl(,saldo);
             url+=makeUrl('restanteIS',diasRI)
             url+=makeUrl('restanteFS',diasRF)
             url+=makeUrl('clasificacion',clasificacion,-1)
-            //console.log(url);
+            console.log(url);
           const respuesta = await Functions.GetData(url);
           console.log('respuesta');
           console.log(respuesta);
@@ -220,7 +228,7 @@ function SaldoPendeinte() {
               <label>Ruta:</label>
             </div>
             <div ref={divRef} className=' flex flex-col justify-evenly mr-5'>
-              <Predictive Parameter='nombre' Diferencer='codigo'
+              <Predictive Parameter='nombreUpper' Diferencer='codigo'
               id={'cliente'} change={setCliente} value={cliente} list = {clientes}
               fn={()=>{
                 divRef.current.childNodes[0].childNodes[0].childNodes[0].blur();

@@ -1,21 +1,21 @@
-function Input(props) {
+function Input({fn, type, custom, id, change, value, placeholder, list, customRef}) {
   function enterKey(e){
     if(e.key === 'Enter'){
-      if(props.fn !== undefined)props.fn()
+      if(fn !== undefined)fn()
       //e.target.blur();
     }
   }
   return (      
     <input
-      type={props.type}
-      className= {`${props.custom} px-2 rounded-xl border-solid border-2 border-black h-7`}
+      type={type}
+      className= {`${custom} px-2 rounded-xl border-solid border-2 border-black h-7`}
       onKeyDown={enterKey}
-      id={props.id}
-      onChange={props.change}
-      value = {props.value}
-      placeholder={props.placeholder}
-      autoComplete={props.list}
-      ref={props.customRef}
+      id={id}
+      onChange={change}
+      value = {value}
+      placeholder={placeholder}
+      autoComplete={list}
+      ref={customRef}
     >
     </input>
   )

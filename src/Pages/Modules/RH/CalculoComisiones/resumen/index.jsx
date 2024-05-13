@@ -17,12 +17,13 @@ function resumen(props) {
                 <thead className="bg-blue-950 text-white">
                     <tr>
                         <th>Agente</th>
+                        <th>Total</th>
                         <th>Cobranza</th>
+                        <th>% Cobrado</th>
                         <th>Cobranza sin IVA</th>
-                        <th>A tiempo</th>
-                        <th>Fuera de tiempo</th>
                         <th>Esquema de evaluación</th>
                         <th>% Comision</th>
+                        <th>% Penalizacion</th>
                         <th>Comision</th>
                         <th>Otros descuentos</th>
                         <th>Anticipo</th>
