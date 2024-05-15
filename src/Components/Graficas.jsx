@@ -73,13 +73,13 @@ function Graficas(props) {
     ],
   };
   function innerText(chart){
-    var width = chart.width, height = chart.height, ctx = chart.ctx;
+    let width = chart.width, height = chart.height, ctx = chart.ctx;
     ctx.restore();
-    var fontSize = ((height / 160)+.5).toFixed(2);
+    let fontSize = ((height / 160)+.5).toFixed(2);
     ctx.font = fontSize + "em calibri";
     ctx.textBaseline = "top";
     const divisor = chart.data.datasets[0].data[0]+chart.data.datasets[0].data[1]
-    var text = `${divisor!=0?(
+    let text = `${divisor!=0?(
       (chart.data.datasets[0].data[0]*100)
       /
       (divisor)

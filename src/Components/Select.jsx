@@ -1,24 +1,24 @@
 import { list } from "postcss";
 import Option from "./Option"
 
-function Select(props) {
-    const end = props.list.length;
+function Select({list, criterio, id, fn, custom}) {
+    const end = list.length;
     const array = new Array();
     for(let i=0; i<end; i++){
       let text;
       let value;
       let key; 
-      if(props.criterio!=undefined){
-        text = value = key = props.list[i][props.criterio];
+      if(criterio!=undefined){
+        text = value = key = list[i][criterio];
       }else{
-        text = value = key = props.list[i];
+        text = value = key = list[i];
       }
       array.push( <Option text={text} value={value} key={key}/> )
     }
     return (
-    <select id={props.id} key='select'
-     onChange={props.fn}
-     className = {`rounded-xl border-solid border-2 border-black ${props.custom}`}
+    <select id={id} key='select'
+     onChange={fn}
+     className = {`rounded-xl border-solid border-2 border-black ${custom}`}
      >
         <Option text = 'Seleccionar Opcion' value={-1} key='-1'/>
         {array}

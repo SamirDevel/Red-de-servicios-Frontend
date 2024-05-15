@@ -19,6 +19,7 @@ function MenuAreas() {
       <MenuButton text='Recursos Humanos' fn ={()=>open('menu', 'RH')}/>
       <MenuButton text='Almacen e Inventario' fn ={()=>open('menu', 'ALM')}/>
       <MenuButton text='Facturacion' fn ={()=>open('menu', 'FTC')}/>
+      <MenuButton text='Ventas' fn ={()=>open('menu', 'VNT')}/>
     </div>
   )
 }
