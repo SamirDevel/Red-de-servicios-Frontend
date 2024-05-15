@@ -1,12 +1,12 @@
-function BlueBotton(props){
+function BlueBotton({fn, text, id}){
     return (
         <button
-            onClick={props.fn}
+            onClick={fn}
             className = "text-white text-2xl bg-cyan-600 w-32 h-fit rounded-xl self-center place-self-center hover:bg-white hover:text-cyan-600"
-            id={props.id}
+            id={id}
             type="button"
         >
-            {props.text}
+            {text}
         </button>
     )
 }

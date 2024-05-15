@@ -27,7 +27,7 @@ function Table(props) {
         const pivot = array[0][criterio];
         const left = []; 
         const right = []
-        for (var i = 1; i < array.length; i++) {
+        for (let i = 1; i < array.length; i++) {
             const menor = array[i][criterio] < pivot;
             if(reversed === true) menor===true ?left.push(array[i]) :right.push(array[i]);
           else menor===true ?right.push(array[i]) :left.push(array[i]);

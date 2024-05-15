@@ -9,7 +9,7 @@ function Table(props) {
         const pivot = array[0][criterio];
         const left = []; 
         const right = []
-        for (var i = 1; i < array.length; i++) {
+        for (let i = 1; i < array.length; i++) {
           array[i][criterio] < pivot ? left.push(array[i]) : right.push(array[i]);
         }
         return quicksort(left,criterio).concat(array[0], quicksort(right, criterio));
@@ -22,7 +22,7 @@ function Table(props) {
         const pivot = array[0][criterio];
         const left = []; 
         const right = []
-        for (var i = 1; i < array.length; i++) {
+        for (let i = 1; i < array.length; i++) {
           array[i][criterio] > pivot ? right.push(array[i]) : left.push(array[i]);
         }
         return reversequicksort(right,criterio).concat(array[0], reversequicksort(left, criterio));

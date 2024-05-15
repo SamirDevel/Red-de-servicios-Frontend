@@ -1,12 +1,12 @@
 import Select from './Select'
 
-function LabelSelect(props) {
+function LabelSelect({text, list, id, fn, value, criterio}) {
   return (
     <div className='flex flex-row'>
       <label className='mr-1'>
-          {props.text}
+          {text}
       </label>
-      <Select list={props.list} id={props.id} fn={props.fn} value={props.value} criterio={props.criterio}/>
+      <Select list={list} id={id} fn={fn} value={value} criterio={criterio}/>
     </div>
   )
 }
