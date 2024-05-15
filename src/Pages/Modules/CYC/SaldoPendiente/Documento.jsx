@@ -167,7 +167,7 @@ useEffect(()=>{
             <br />
             <label className="m-1">Forma en que paga el cliente:</label>
             <Input id='formaPago' value={formaPago} change={e=>{setFormaPago(e.target.value)}}/> 
-            <label className="m-1">Días para llevar contra-recibo: </label>
+            <label className="m-1">Días para llelet contra-recibo: </label>
             <Input id='contrarecivo' value={contrarecivo} change={e=>{setContrarecivo(e.target.value)}}/>
             <label className=" h-7"> Dias de credito:</label>
             <Input type={'number'} value={diasCredito} change={(e)=>{setDiasCredito(e.target.value)}} custom={'px-2 rounded-xl border-solid border-2 border-black h-7'}/> 

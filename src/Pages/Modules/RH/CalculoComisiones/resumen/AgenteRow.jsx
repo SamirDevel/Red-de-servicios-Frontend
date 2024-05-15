@@ -9,6 +9,7 @@ import SelectPenalizacion from "../SelectPenalizacion";
 function AgenteRow(props){
     const [ventas, setVentas] = useState(getTotal());
     const [ventasSinIVA, setVentasSinIVA] = useState(0);
+    const [cobranzaSinIVA, setCobranzaSinIVA] = useState(0);
     const [porcentaje, setPorcentaje] = useState();
     const [comisionAPagar, setcomisionAPagar] = useState(0);
     const [aTiempo, setAtiempo] = useState(getATiempo());
@@ -26,6 +27,9 @@ function AgenteRow(props){
         setVentasSinIVA(cobrado/1.16);
     }, [cobrado])
     useEffect(()=>{
+        setCobranzaSinIVA(ventas/1.16);
+    }, [ventas])
+    useEffect(()=>{
         setCobrado(aTiempo + fueraTiempo);
     }, [aTiempo, fueraTiempo])
     useEffect(()=>{
@@ -33,7 +37,6 @@ function AgenteRow(props){
     },[porcentaje, ventasSinIVA, penalizado])
     useEffect(()=>{
         setAnticipo(comisionAPagar/2);
-        
     },[comisionAPagar])
     useEffect(()=>{
         setTotal(comisionAPagar-descuentos)
@@ -113,7 +116,7 @@ function AgenteRow(props){
         <td key={`${props.agente.codigo}-2`}>{fns.moneyFormat(cobrado)}</td>,
         <td key={`${props.agente.codigo}-3`}>{fns.fixedString(pCobrado)}%</td>,
         <td key={`${props.agente.codigo}-4`}>{fns.moneyFormat(ventasSinIVA)}</td>,
-        <td key={`${props.agente.codigo}-5`}><SelectEsquema fn={handdleChangeSelect} ventas={ventasSinIVA} inicial={props.agente.esquema}/></td>,
+        <td key={`${props.agente.codigo}-5`}><SelectEsquema fn={handdleChangeSelect} ventas={cobranzaSinIVA} inicial={props.agente.esquema}/></td>,
         <td key={`${props.agente.codigo}-6`}>{fns.fixedString(porcentaje)} %</td>,
         <td key={`${props.agente.codigo}-7`}> <SelectPenalizacion cobrado={pCobrado} fn={setPenalizado}/> </td>,
         <td key={`${props.agente.codigo}-8`}>{fns.moneyFormat(comisionAPagar)}</td>,
