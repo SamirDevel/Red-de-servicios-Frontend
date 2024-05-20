@@ -65,7 +65,7 @@ function SelectPenalizacion({cobrado, fn}) {
                 {
                 penalizaciones.map((penalizacion, index)=>{
                     return <option key={index} value={penalizacion.id}>
-                        {fns.fixedString(penalizacion.valor)}%
+                        {fns.fixed2String(penalizacion.valor)}%
                     </option>
                 })}
             </select>
