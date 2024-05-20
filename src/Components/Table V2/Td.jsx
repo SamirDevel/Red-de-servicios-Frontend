@@ -4,7 +4,9 @@ function Td(props) {
   const [value, setValue] = useState(props.content)
   function display(){
     if(props.type==='pesos')return fns.moneyFormat(value)
-      if(props.type==='%')return `${fns.fixedString(value)}%`
+    if(props.type==='%')return `${fns.fixed2String(value)}%`
+    if(props.type==='date')return `${fns.dateString(new Date(value))}`
+    if(props.type==='float')return `${fns.fixed2String(value)}`
     else return value
   }
   return (

@@ -38,10 +38,10 @@ function Filtros({area, setDocs, children, filtro}) {
     useEffect(()=>{
         async function getLists(){
             const respuesta = await Promise.all([
-                fns.GetData(`viajes/series`),
+                fns.GetData(`/viajes/series`),
                 fns.GetData(`/documentos/rutas/corp`),
-                fns.GetData(`viajes/choferes?estatus=ACTIVO`),
-                fns.GetData(`viajes/vehiculos?estatus=ACTIVO`),
+                fns.GetData(`/viajes/choferes?estatus=ACTIVO`),
+                fns.GetData(`/viajes/vehiculos?estatus=ACTIVO`),
                 fns.GetData(`/usuarios/todos`)
             ])
             console.log(respuesta);

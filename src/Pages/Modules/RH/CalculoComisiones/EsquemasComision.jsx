@@ -69,7 +69,7 @@ function EsquemasComision() {
         const respuesta = await Promise.all([
             fns.PostData('recursos.humanos/esquemas',esquemas),
             fns.PostData('recursos.humanos/penalizaciones',penalizaciones),
-            fns.PostData('recursos.humanos/meta/ventas',{meta:fns.fixed(parseFloat(meta))})
+            fns.PostData('recursos.humanos/meta/ventas',{meta:fns.fixed2(parseFloat(meta))})
         ])
         console.log(respuesta)
         for(const i in respuesta){
