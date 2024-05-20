@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import DeleteButtonIcon from '../../../../../Components/DeleteButtonIcon';
+import DeleteButtonIcon from '../../DeleteButtonIcon';
 import DomicilioSelect from './Domicilio.Select';
-import * as fns from '../../../../../Functions'
+import { fns } from '../../../Functions';
 
 function CrearRow({index, doc, deleteFn, number}) {
     const [estado, setEstado] = useState('')
