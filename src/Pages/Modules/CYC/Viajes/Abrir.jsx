@@ -120,7 +120,7 @@ function Abrir() {
             observacionLlegada:observaciones,
             kmFinal:parseInt(KM),
             documentos:documentos.map(doc=>{
-                return {...doc, importe:fns.fixed(doc['pago'])}
+                return {...doc, importe:fns.fixed2(doc['pago'])}
             }),
             cargas:parseFloat(cargas),
             
