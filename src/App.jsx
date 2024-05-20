@@ -10,6 +10,7 @@ import rhRoutes from './Routes/RH.routes'
 import almRoutes from './Routes/ALM.routes'
 import ftcRoutes from './Routes/FTC.routes'
 import ventasRoutes from './Routes/VNT.routes'
+import logisticaRotes from './Routes/LGT.routes'
 
 function App() {
   return (
@@ -32,6 +33,8 @@ function App() {
         {ftcRoutes}
 
         {ventasRoutes}
+
+        {logisticaRotes}
       </Routes>
     </BrowserRouter>
   )

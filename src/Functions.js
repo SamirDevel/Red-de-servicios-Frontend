@@ -61,11 +61,17 @@ export function moneyFormat(number){
     });
     return formater.format(number);
 }
-export function fixed(numero=0){
+export function fixed2(numero=0){
     return parseFloat(numero.toFixed(2));
 }
-export function fixedString(numero=0){
+export function fixed2String(numero=0){
     return numero.toFixed(2);
+}
+export function fixed(numero=0, decimals){
+    return parseFloat(numero.toFixed(decimals));
+}
+export function fixedString(numero=0, decimals){
+    return numero.toFixed(decimals);
 }
 function addZeroFirst(number){
     return number<10?`0${number}`:number
@@ -185,6 +191,10 @@ export function makeUrlQuery(params){
         }
     })
     return cadena;
+}
+export function getEmpresa(cadena=''){
+    if(cadena==='cdc')return 'Comercial Domos Copernico'
+    if(cadena==='cmp')return 'Central Mayorista de Páneles'
 }
 //Strategy para patron de funciones en 3 pasos para predictivos
 /*
