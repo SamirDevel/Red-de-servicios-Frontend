@@ -24,7 +24,7 @@ function Dcoumento() {
   const [originalObs, setOriginal] = useState('');
   const [nombre, SetNombre] = useState('');
   const [resablecido, setRestablecido] = useState(0);
-  const [clasificacionActiva, setClasificacionActiva] = useState(0);
+  const [clasificacionActiva, setClasificacionActiva] = useState('');
   const [activo, setActivo] = useState(false);
   function makeUrl(){
     let url=`/credito.cobranza/documento/corp/${params['serie']}/${params['folio']}`;
@@ -55,6 +55,7 @@ useEffect(()=>{
       setOriginal(obj['observacion']!==undefined?obj['observacion']:'');
 
       const clasificaciones = await Functions.GetData('/clientes/clasificaciones/corp');
+      console.log(clasificaciones)
       setClasificaciones(clasificaciones.sort((item1,item2)=>{
         return item1.codigo.localeCompare(item2.codigo)
       }))
@@ -102,7 +103,7 @@ useEffect(()=>{
   function setClasificacionCliente(){
     for(const codigo in clasfificaciones){
       if(clasfificaciones[codigo]['codigo']==cliente.current['clasificacionClienteReal']){
-        setClasificacionActiva(clasfificaciones[codigo]['id']);
+        setClasificacionActiva(clasfificaciones[codigo]['codigo']);
         break;
       }
     }
@@ -134,9 +135,9 @@ useEffect(()=>{
           <label className=" text-xl">{`FACTURA ${params['serie']}-${params['folio']} a nombre de ${nombre}`}</label>
           <label className=" text-lg"> CODIGO DEL CLIENTE: <span className="text-xl font-bold">{`${cliente.current['codigo']}`}</span></label>
           <label className=" text-lg"> CLASIFICACION DEL CLIENTE: 
-            <select name="" id="clasfificacion" className="text-xl font-bold" onChange={e=>setClasificacionActiva(parseInt(e.target.value))} value={clasificacionActiva}>
+            <select name="" id="clasfificacion" className="text-xl font-bold" onChange={e=>setClasificacionActiva(e.target.value)} value={clasificacionActiva}>
               {clasfificaciones.map((item,index)=>{
-                return <option key={index} value={item.id}>
+                return <option key={index} value={item.codigo}>
                   {`${item.codigo}-${item.nombre}`}
                 </option>
               })}
