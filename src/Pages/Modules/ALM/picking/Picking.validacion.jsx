@@ -25,7 +25,13 @@ function PickingDocumento() {
     const [doc, setDoc] = useState('-1');
     const [objetosPik, setObjetosPik] = useState([]);
     const [objetosDev, setObjetosDev] = useState([]);
+    const [totalEsc, setTotalEsc] = useState(0)
+    const [totalTru, setTotalTru] = useState(0)
+    const [totalGral, setTotalGral] = useState(0)
     const [total, setTotal] = useState(0)
+    const [totalCostoEsc, setTotalCostoEsc] = useState(0);
+    const [totalCostoTru, setTotalCostoTru] = useState(0);
+    const [totalCostoGral, setTotalCostoGral] = useState(0);
     const [totalCosto, setTotalCosto] = useState(0);
     const [folioI, setFolioI] = useState('');
     const [folioF, setFolioF] = useState('');
@@ -47,31 +53,15 @@ function PickingDocumento() {
     useEffect(()=>{
         setObjetosPik([])
         setObjetosDev([])
+        setTotal(0)
+        setTotalCosto(0)
     },[empresa, doc])
     useEffect(()=>{
         async function getData(){
             const query = fns.makeUrlQuery({folioI, folioF, costoI, costoF, pendienteI,pendienteF, razonS:rs, estado});
             const respuesta = await fns.GetData(`/almacen.inventario/validar/${empresa}/${fechaI}/${fechaF}/${doc}${query}`);
             console.log(respuesta);
-            //let contTotal = 0
-            //let contCosto = 0
             if(respuesta['mensaje']===undefined){
-                /*setObjetosPik(respuesta.map(doc=>{
-                    contTotal += doc.total;
-                    contCosto += doc.costo;
-                    const obj ={
-                        EXPEDICION:doc.expedicion.substring(0,10),
-                        DOCUEMNTO: `${doc.serie}-${doc.folio}`,
-                        RS:doc.nombre,
-                        TOTAL:doc.total,
-                        COSTO:doc.costo,
-                        ESTADO:doc.cancelado===0?'ACTIVO':'CANCELADO',
-                        PENDIENTES:doc.unidadesPendientes
-                    }
-                    return obj
-                }));
-                setTotalCosto(contCosto);
-                setTotal(contTotal);*/
                 setList(respuesta);
             }else alert(respuesta['mensaje'])
             setSubmited([])
@@ -82,11 +72,27 @@ function PickingDocumento() {
         }
     },[submited])
     function setList(array){
+        let contTotalEsc = 0
+        let contTotalTru = 0
+        let contTotalGral = 0
         let contTotal = 0
         let contCosto = 0
+        let contCostoEsc = 0
+        let contCostoTru = 0
+        let contCostoGral = 0
         const result = array.map(element=>{
             contTotal += element.total;
             contCosto += element.costo;
+            if(element.calsificacion1===1){
+                contTotalEsc += element.total;
+                contCostoEsc += element.costo;
+            }else if(element.calsificacion1===26){
+                contTotalTru += element.total;
+                contCostoTru += element.costo;
+            }else{
+                contTotalGral += element.total;
+                contCostoGral += element.costo;
+            }
             const obj ={
                 EXPEDICION:element.expedicion.substring(0,10),
                 DOCUEMNTO: `${element.serie}-${element.folio}`,
@@ -101,7 +107,14 @@ function PickingDocumento() {
         if(doc ==='picking')setObjetosPik(result);
         if(doc ==='devolucion')setObjetosDev(result);
         setTotalCosto(contCosto);
+        setTotalCostoGral(contCostoGral)
+        setTotalCostoEsc(contCostoEsc)
+        setTotalCostoTru(contCostoTru)
+
         setTotal(contTotal);
+        setTotalGral(contTotalGral)
+        setTotalEsc(contTotalEsc)
+        setTotalTru(contTotalTru)
         setSubmited([])
     }
     async function handleSubmit(e){
@@ -209,18 +222,67 @@ function PickingDocumento() {
                 <BlueButton text='Buscar' fn={handleSubmit}/>
                 <br />
                 <div className={`${(objetosPik.length||objetosDev.length)>0?'flex flex-col':'hidden'} items-center justify-center`}>
-                    <table>
-                        <thead>
+                    <div className='flex flex-row'>
+                        <table><tbody>
                             <tr>
-                                <th className='bg-blue-950 text-white'>
-                                    Total de los documentos
-                                </th>
-                                <th className=' font-normal'>
-                                    {fns.moneyFormat(total)}
-                                </th>
+                                <td className='bg-blue-950 text-white font-bold'>
+                                    Total de Escaleras
+                                </td>
+                                <td>
+                                    {fns.moneyFormat(totalEsc)}
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
+                            <tr>
+                                <td className='bg-blue-950 text-white font-bold'>
+                                    Total de Trupper
+                                </td>
+                                <td>
+                                    {fns.moneyFormat(totalTru)}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className='bg-blue-950 text-white font-bold'>
+                                    Total General
+                                </td>
+                                <td>
+                                    {fns.moneyFormat(totalGral)}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className='bg-blue-950 text-white font-bold'>
+                                    Total de los documentos
+                                </td>
+                                <td>
+                                    {fns.moneyFormat(total)}
+                                </td>
+                            </tr>
+                        </tbody></table>
+                        <span className='mx-1'/>
+                        <table><tbody>
+                            <tr>
+                                <td className='bg-blue-950 text-white font-bold'>
+                                    Costo de Escaleras
+                                </td>
+                                <td>
+                                    {fns.moneyFormat(totalCostoEsc)}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className='bg-blue-950 text-white font-bold'>
+                                    Costo de Trupper
+                                </td>
+                                <td>
+                                    {fns.moneyFormat(totalCostoTru)}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className='bg-blue-950 text-white font-bold'>
+                                    Costo general
+                                </td>
+                                <td>
+                                    {fns.moneyFormat(totalCostoGral)}
+                                </td>
+                            </tr>
                             <tr>
                                 <td className='bg-blue-950 text-white font-bold'>
                                     Total de los costos
@@ -229,8 +291,8 @@ function PickingDocumento() {
                                     {fns.moneyFormat(totalCosto)}
                                 </td>
                             </tr>
-                        </tbody>
-                    </table>
+                        </tbody></table>
+                    </div>
                     <br />
                     <div className={`${(objetosPik.length>0&&doc==='picking')?'visible':'hidden'}`}>
                         <Table  theme='bg-blue-950 text-white' colsHeads={pickedHeads} list={objetosPik} manage={setObjetosPik}/>
@@ -246,4 +308,14 @@ function PickingDocumento() {
 }
 export default PickingDocumento
 /*
+<thead>
+                            <tr>
+                                <th className='bg-blue-950 text-white'>
+                                    Total de los documentos
+                                </th>
+                                <th className=' font-normal'>
+                                    {fns.moneyFormat(total)}
+                                </th>
+                            </tr>
+                        </thead>
 */
