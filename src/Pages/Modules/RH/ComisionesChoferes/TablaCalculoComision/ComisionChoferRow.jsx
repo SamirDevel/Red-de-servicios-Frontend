@@ -28,13 +28,13 @@ function ComisionChoferRow({raw, totDes, tot, save, fn}){
         const obj={
             chofer:raw.CODIGO,
             foraneos:raw.FORANEOS,
-            pagaForaneos:raw.TOTALF,
+            pagadoForaneos:raw.TOTALF,
             aJalisco:raw.JALISCO,
-            pagaJalisco:raw.TOTALJ,
+            pagadoJalisco:raw.TOTALJ,
             paradas:raw.LOCALES,
-            pagaParadas:raw.TOTALL,
+            pagadoParadas:raw.TOTALL,
             auxiliar:raw.AUXILIAR,
-            pagaAuxiliar:raw.TOTALA,
+            pagadoAuxiliar:raw.TOTALA,
             totalApagar:total,
             descuentos:descuento,
             motivo
