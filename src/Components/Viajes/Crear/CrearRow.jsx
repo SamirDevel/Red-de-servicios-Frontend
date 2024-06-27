@@ -44,7 +44,7 @@ function CrearRow({index, doc, deleteFn, number}) {
         return cliente['domicilios'].map((dom, realIndex)=>{return {...dom, realIndex}}).filter(dom=>{
             //console.log(cliente['rfc']==='XAXX010101000'&&dom['tipoDireccion']==0);
             //console.log(dom['tipoDireccion']==0);
-            //console.log(dom);
+            console.log(dom);
             if(cliente['rfc']==='XAXX010101000'&&dom['tipoDireccion']==0)return false;
             return true;
         });
