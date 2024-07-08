@@ -36,6 +36,7 @@ function TablaComisionChofer({rows, save, fn, fechaI, fechaF}) {
         <table>
             <thead className='bg-blue-950 text-white'>
                 <tr>
+
                     <th>Codigo</th>
                     <th>Nombre</th>
                     <th>Foraneos</th>
@@ -66,7 +67,7 @@ function TablaComisionChofer({rows, save, fn, fechaI, fechaF}) {
                     pagoAux += element.TOTALA
                     totalaViajes += element.VIAJES
                     totalSubtotal += element.TOTALL + element.TOTALJ + element.TOTALF + element.TOTALA
-                    return <ComisionChoferRow raw={element} key={index} totDes={acumDes} tot={acumTot} save={save} fn={fn}/>
+                    return <ComisionChoferRow raw={element} key={`${element.CODIGO}-${index}`} totDes={acumDes} tot={acumTot} save={save} fn={fn}/>
                 })}
             </tbody>
             <tfoot className='bg-blue-950 text-white'>

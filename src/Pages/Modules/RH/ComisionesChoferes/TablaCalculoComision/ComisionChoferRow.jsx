@@ -60,7 +60,7 @@ function ComisionChoferRow({raw, totDes, tot, save, fn}){
                 <InputCantidad type='number' value={descuento} fn={setDescuento}/>
             </td>
             <td>
-                <textarea cols="20" rows="5" value={motivo} onChange={e=>setMotivo(e.target.value)}/>
+                <textarea cols="20" rows="1" value={motivo} onChange={e=>setMotivo(e.target.value)}/>
             </td>
             <td>{fns.moneyFormat(total)}</td>
             <td>{raw.BTN}</td>

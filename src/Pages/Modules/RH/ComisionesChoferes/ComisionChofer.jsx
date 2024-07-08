@@ -5,6 +5,8 @@ import Table from '../../../../Components/Table V2'
 import OpenBtn from '../../../../Components/OpenButtonIcon'
 import Input from '../../../../Components/Input'
 import TablaComisionChofer from './TablaCalculoComision'
+import { GrHide } from "react-icons/gr";
+import IconButton from '../../../../Components/IconButton'
 
 function ComisionChofer() {
     const [inicio, setInicio] = useState('')
@@ -17,9 +19,12 @@ function ComisionChofer() {
     const [totales, setTotales] = useState([])
     const [agregados, setAgregados] = useState(0)
     const [guardar, setGuardar] = useState(false)
+    const [hidded, setHidded] = useState('')
+    const [hidden, setHidden] = useState([])
     const toSave = []
 
     const comisionHeads = [
+        {text:'Ocultar',type:'string'},
         {text:'Codigo',type:'string'},
         {text:'Nombre', type:'string'},
         {text:'Foraneos',type:'string'},
@@ -86,6 +91,16 @@ function ComisionChofer() {
         }
         setData();
     }, [guardar])
+    useEffect(()=>{
+        if(hidded!=='' && hidden.length===0){
+            setHidden(objetos.filter(objeto=>objeto.CODIGO!==hidded));
+            setHidded('')
+            setObjetos([])
+        }else if(hidded ==='' && hidden.length>0){
+            setObjetos(hidden)
+            setHidden([])
+        }
+    }, [hidded, hidden])
 
     function getValue(number=0){
         let result = 0;
@@ -98,12 +113,13 @@ function ComisionChofer() {
         return `${window.location.href}/desgloce/${chofer}/${fechaI}/${fechaF}/${tipo}`
     }
     function setObjetosGuardados(array, counters, fechaI, fechaF){
-        setObjetos(array.map(item=>{
+        setObjetos(array.map((item)=>{
             const TOTALF = item['pagadoForaneos'];
             const TOTALJ = item['pagadoJalisco'];
             const TOTALL= item['pagadoParadas'];
             const TOTALA = item['pagadoAuxiliar'];
-            const sum = TOTALF+TOTALJ+TOTALL+TOTALA;
+            const subtotal = TOTALF+TOTALJ+TOTALL+TOTALA;
+            const total = subtotal-item['descuentos'];
             counters.contF += TOTALF;
             counters.contJ += TOTALJ;
             counters.contL += TOTALL;
@@ -112,9 +128,12 @@ function ComisionChofer() {
             counters.contVJ += item['aJalisco'];
             counters.contVL += item['paradas'];
             counters.contVA += item['auxiliar'];
-            counters.contT += sum
+            counters.contS += subtotal
+            counters.contT += total
             counters.contV += item['viajes'];
+            counters.contD += item['descuentos'];
             return {
+                HIDE: <IconButton icon={ <GrHide size={25}/>} fn={()=>setHidded(item['chofer'])}/>,
                 CODIGO:item['chofer'],
                 NOMBRE:item['nombre'].replace(/ /g,'\n'),
                 FORANEOS:item['foraneos'],
@@ -126,10 +145,10 @@ function ComisionChofer() {
                 VIAJES:item['viajes'],
                 AUXILIAR:item['auxiliar'],
                 TOTALA,
-                SUBTOTAL:sum,
+                SUBTOTAL:subtotal,
                 DESCUENTOS:item['descuentos'],
                 MOTIVO:item['motivo'],
-                TOTAL:sum-item['descuentos'],
+                TOTAL:total,
                 BTN:<OpenBtn size={28} url={getUrl(item.codigo!==undefined?item.codigo:item.chofer, fechaI, fechaF, item['tipo'])}/>
             }
         }))
@@ -198,7 +217,9 @@ function ComisionChofer() {
             contVJ: 0,
             contVL: 0,
             contVA: 0,
-            contT: 0
+            contT: 0, 
+            contD:0,
+            contS:0
         }
         const array = respuesta[0]['registros'].concat(respuesta[1]['registros']);
         if(flag===false){
@@ -218,6 +239,9 @@ function ComisionChofer() {
                 contV:conts.contV,
                 contVA:conts.contVA,
                 contA:conts.contA,
+                contS:conts.contS,
+                contD:conts.contD,
+                c:'',
                 contT:conts.contT
             }
         ])
@@ -244,7 +268,12 @@ function ComisionChofer() {
                 (item)=>{
                     toSave.push(item);
                 }}/>
-        if(guardados===true)return <Table  theme='bg-blue-950 text-white w-1' colsHeads={comisionHeads} list={objetos} manage={setObjetos} foots={totales}/>
+        if(guardados===true){
+            const newTotals = totales.map(total=>{
+                return {extra:'', ...total}
+            })
+            return <Table  theme='bg-blue-950 text-white w-1' colsHeads={comisionHeads} list={objetos} manage={setObjetos} foots={newTotals}/>
+        }
     }
 
     return (
