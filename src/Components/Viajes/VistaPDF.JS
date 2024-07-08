@@ -57,6 +57,7 @@ export  default function makePDF(viaje)
     const {cantAcum, totAcum} = getTotales(viaje.docs)
     doc.text(`Total de Productos: ${cantAcum}`, 111, 67);
     doc.text(`Total del Viaje: ${fns.moneyFormat(totAcum)}`, 111, 71);
+    if(viaje.anterior !==undefined)doc.text(`Viaje anterior :${viaje.anterior}`, 191, 56);
     //getData(docs)
     doc.autoTable({
     head:[['No', 'Razon\nSocial', 'Factura', 'Destino', 'Domicilio', 'Total\nde\nProductos', 'Peso\nAproximado', 'Total', 'Observaciones']],

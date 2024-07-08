@@ -20,6 +20,9 @@ export async function makeObjetos(viajes, area, callback){
     return await Promise.all(viajes.map(async viaje=>{
         const {origen, rfc, dom} = fns.getDatosFiscales(viaje['empresa'])
         console.log(viaje)
+        const anterior = viaje['anterior']!== null
+            ?`${viaje['anterior']['serie']['serie']}-${viaje['anterior']['folio']}`
+            :undefined
         const toPrint = {
             origen,
             rfc,
@@ -40,8 +43,8 @@ export async function makeObjetos(viajes, area, callback){
             obs:viaje['observacionSalida'],
             obsL:viaje['observacionLlegada'],
             docs:await getDets(viaje, area),
-            cargas:viaje['cargas']
-            
+            cargas:viaje['cargas'],
+            anterior
         }
         return callback(viaje, toPrint);
     }))
