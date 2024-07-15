@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react"
 import Input from "../../../../../Components/Input"
 import * as fns from "../../../../../Functions"
 import Predictive from "../../../../../Components/Predictive"
-import BlueBotton from "../../../../../Components/BlueBotton"
 
 function Vehiculo() {
     const divRef = useRef(null);
@@ -27,10 +26,12 @@ function Vehiculo() {
     const [tipoVehiculo, setTipoVehiculo] = useState(0)
     const [limiteLetras, setLimiteLetras]=useState(0)
     const [limiteNumeros, setLimitNumeros]=useState(0)
+    const [uso, setUso] = useState(false)
 
     useEffect(()=>{
         async function GetData(){
             const respuesta = await fns.GetData('recursos.humanos/vehiculo/todos');
+            console.log(respuesta)
             if(respuesta['mensaje']===undefined){
                 setVehiculos(respuesta.map((item, id)=>{
                     return {...item, id};
@@ -45,6 +46,7 @@ function Vehiculo() {
         async function getData(){
           const url = 'recursos.humanos/vehiculo/catalogos/'
           const respuesta = await Promise.all([fns.GetData(`${url}permisos`), fns.GetData(`${url}configuraciones.vehiculares`)])
+          console.log(respuesta)
           setTiposPermiso(respuesta[0]);
           setConfiguraciones(respuesta[1]);
         }
@@ -68,6 +70,7 @@ function Vehiculo() {
         async function getChoferData(){
             if(codigo!==''){
                 const respuesta = await fns.GetData(`recursos.humanos/vehiculo/${codigo}`)
+                console.log(respuesta)
                 if(respuesta['mensaje']===undefined)setVehiculoE(respuesta);
                 else alert(respuesta['mensaje'])
             }else setVehiculoE('')
@@ -87,6 +90,7 @@ function Vehiculo() {
             setCapacidad(vehiculoE['capacidad'])
             setVigencia(vehiculoE['vigencia'].substring(0,10))
             setEstatus(vehiculoE['estatus'])
+            setUso(vehiculoE['uso'])
         }
     }, [vehiculoE])
 
@@ -141,7 +145,8 @@ function Vehiculo() {
                 año,
                 capacidad,
                 vigencia,
-                estatus
+                estatus,
+                uso
             })
             if(respuesta['mensaje']===undefined){
                 alert(respuesta)
@@ -176,6 +181,14 @@ function Vehiculo() {
         </button>
         <br />
         <label className={`${vehiculoE!==''?'visible':'hidden'}`}>Codigo: {codigo}</label>
+        <div className={`${vehiculoE!==''?'visible':'hidden'}`}>
+          <span className="mx-2"/>
+          <label className="flex flex-row">
+            Es Vehiculo de vendedor
+            <span className="mx-1"/>
+            <input type="checkbox"checked={uso===2} onChange={e=>setUso(e.target.checked===true?2:1)}/>
+          </label>
+        </div>
         <br />
         <div className={`flex flex-row ${vehiculoE!==''?'visible':'hidden'}`}>
           <div className="flex flex-row justify-center mr-5">

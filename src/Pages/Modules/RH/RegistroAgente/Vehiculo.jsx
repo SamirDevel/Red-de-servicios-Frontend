@@ -16,6 +16,7 @@ function Vehiculo() {
   const [año, setAño] = useState('')
   const [capacidad, setCapacidad] = useState('')
   const [vigencia, setVigencia] = useState('')
+  const [uso, setUso] = useState(1)
   const [tipoVehiculo, setTipoVehiculo] = useState(0)
   const [limiteLetras, setLimiteLetras]=useState(0)
   const [limiteNumeros, setLimitNumeros]=useState(0)
@@ -38,6 +39,7 @@ function Vehiculo() {
     async function getData(){
       const url = 'recursos.humanos/vehiculo/catalogos/'
       const respuesta = await Promise.all([fns.GetData(`${url}permisos`), fns.GetData(`${url}configuraciones.vehiculares`)])
+      console.log(respuesta)
       setTiposPermiso(respuesta[0]);
       setConfiguraciones(respuesta[1]);
     }
@@ -108,7 +110,8 @@ function Vehiculo() {
         año:parseInt(año),
         capacidad:parseInt(capacidad),
         vigencia,
-        estatus:'ACTIVO'
+        estatus:'ACTIVO',
+        uso
       });
       if(respuesta['mensaje']===undefined){
         alert(respuesta);
@@ -132,6 +135,12 @@ function Vehiculo() {
             <input type="radio" name='TipoAuto' value={'Auto'} onChange={e=>setTipoVehiculo(e.target.value)}/>
             <span className="mx-1"/>
             Automovil
+          </label>
+          <span className="mx-2"/>
+          <label className="flex flex-row">
+          Es Vehiculo de vendedor
+            <span className="mx-1"/>
+            <input type="checkbox" onChange={e=>setUso(e.target.checked===true?2:1)}/>
           </label>
         </div>
         <br />
