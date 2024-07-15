@@ -52,7 +52,7 @@ function SelectPenalizacion({cobrado, fn}) {
         for(const i in penalizaciones){
             const pen = penalizaciones[i]
             if(pen.id===penalizacion){
-                console.log(pen.valor)
+                //console.log(pen.valor)
                 fn(pen.valor)
                 break;
             }

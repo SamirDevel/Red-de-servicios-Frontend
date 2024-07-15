@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react"
 import * as fns from '../../../../Functions.js';
 
-function SelectEsquema(props) {
+function SelectEsquema({inicial, ventas, fn}) {
     const [esquemas, setEsquemas] = useState([])
-    const [esquema, setEsquema] = useState(0)//props.inicial)
+    const [esquema, setEsquema] = useState(0)
     useEffect(()=>{
         async function getData(){
             const respuesta = await fns.GetData('recursos.humanos/esquemas');
             setEsquemas(respuesta.map((esquema,id)=>{
-                if(props.inicial==esquema.nombre)setEsquema(id)
+                if(inicial==esquema.nombre)setEsquema(id)
                 esquema.rangos = esquema.rangos.map((rango,id)=>{return {...rango, id}})
                 return {...esquema, id}
             }));
@@ -23,13 +23,13 @@ function SelectEsquema(props) {
             const end = rangos.length-1;
             let i=0;
             while(i<end){
-                if(props.ventas>rangos[i]['cantidad'])i++
+                if(ventas>rangos[i]['cantidad'])i++
                 else {
-                    props.fn(parseFloat(rangos[i]['porcentaje']),nombre);
+                    fn(parseFloat(rangos[i]['porcentaje']),nombre);
                     return;
                 }
             }
-            props.fn(parseFloat(rangos[end]['porcentaje']), nombre);
+            fn(parseFloat(rangos[end]['porcentaje']), nombre);
         }
     },[esquema, esquemas])
 
@@ -45,5 +45,3 @@ function SelectEsquema(props) {
 }
 
 export default SelectEsquema
-
-//selected={props.inicial==id?id:0}

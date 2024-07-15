@@ -1,21 +1,19 @@
 import { useState, useEffect } from "react"
 
 function InputCantidad({value, fn, custom}) {
-    const [cantidad, setCantidad] = useState(0)
+    //const [cantidad, setCantidad] = useState(0)
     const [cantidadFormateada, setCantidadFormateada] = useState('')
 
-    useEffect(()=>{
+    /*useEffect(()=>{
         if(value!==undefined){
             setCantidad(value.toString())
         }
     },[])
-
     useEffect(()=>{
         fn(cantidad);
-    },[cantidad])
-
+    },[cantidad])*/
     useEffect(()=>{
-        if(value!==undefined)handleChange(value.toString())
+        if(isNaN(value)===false)handleChange(value.toString())
     },[value])
 
     function handleChange(old){
@@ -23,7 +21,7 @@ function InputCantidad({value, fn, custom}) {
         const dotIndex = value.indexOf('.')
         const recorted = dotIndex!==-1?value.substring(0, dotIndex+3):value
         const numero = parseFloat(recorted)
-        isNaN(numero)===false?setCantidad(numero):setCantidad(0);
+        isNaN(numero)===false?fn(numero):fn(0);
         const separada = separar(recorted);
         setCantidadFormateada(separada)
         //console.log(formated);
