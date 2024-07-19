@@ -26,7 +26,7 @@ function index() {
     {text:'Fuera de Tiempo',type:'pesos'},
     {text:'Cancelado',type:'pesos'},
     {text:'Cobranza',type:'pesos'},
-    {text:'No CObrado', type:'pesos'},
+    {text:'No Cobrado', type:'pesos'},
   ]
   
   useEffect(()=>{
