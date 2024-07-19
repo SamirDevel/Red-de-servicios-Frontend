@@ -18,11 +18,16 @@ function index() {
     {text:'Cliente',type:'string'},
     {text:'Expedicion',type:'string'},
     {text:'Vencimiento',type:'sring'},
-    {text:'Total',type:'pesos'},
+    {text:'Total de la factura',type:'pesos'},
     {text:'Por cobrar',type:'pesos'},
+    {text:'Adelanto',type:'pesos'},
     {text:'Cobrado',type:'pesos'},
     {text:'A Tiempo',type:'pesos'},
-    {text:'Fuera de Tiempo',type:'pesos'}]
+    {text:'Fuera de Tiempo',type:'pesos'},
+    {text:'Cancelado',type:'pesos'},
+    {text:'Cobranza',type:'pesos'},
+    {text:'No CObrado', type:'pesos'},
+  ]
   
   useEffect(()=>{
     async function getData(){
@@ -47,10 +52,14 @@ function index() {
         EXPEDICION:doc.expedicion.substring(0,10),
         VENCIMIENTO:doc.vencimientoReal!==undefined?doc.vencimientoReal.substring(0,10):doc.vencimientoComision.substring(0,10), 
         TOTAL:doc.total,
-        COBRANZA:doc.pendienteInicio,
+        PENDIENTEI:doc.pendienteInicio,
+        ADELANTO:doc.adelantado,
         COBRADO:doc.cobrado, 
         ATIEMPO:doc.aTiempo,
-        FUERATIEMPO:doc.fueraTiempo
+        FUERATIEMPO:doc.fueraTiempo,
+        CANCELADO:doc.cancelado,
+        COBRANZA: doc.pendienteInicio + doc.adelantado,
+        PENDIENTEF:doc.pendienteFinal
       }
     }))
     setTotal(prev=>{
