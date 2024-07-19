@@ -124,7 +124,7 @@ function AgenteRow({agente, save, id, fn, fechaI, fechaF, index}){
         <td key={`${agente.codigo}-2`}>{fns.moneyFormat(cobrado)}</td>,
         <td key={`${agente.codigo}-3`}>{fns.fixed2String(pCobrado)}%</td>,
         <td key={`${agente.codigo}-4`}>{fns.moneyFormat(ventasSinIVA)}</td>,
-        <td key={`${agente.codigo}-5`}><SelectEsquema fn={handdleChangeSelect} ventas={ventasSinIVA} inicial={agente.esquema}/></td>,
+        <td key={`${agente.codigo}-5`}><SelectEsquema fn={handdleChangeSelect} ventas={ventas} inicial={agente.esquema}/></td>,
         <td key={`${agente.codigo}-6`}>{fns.fixed2String(porcentaje)} %</td>,
         <td key={`${agente.codigo}-7`}> <SelectPenalizacion cobrado={pCobrado} fn={setPenalizado}/> </td>,
         <td key={`${agente.codigo}-8`}>{fns.moneyFormat(comisionAPagar)}</td>,

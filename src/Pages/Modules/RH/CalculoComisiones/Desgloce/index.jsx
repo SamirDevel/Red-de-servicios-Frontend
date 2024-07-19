@@ -47,7 +47,7 @@ function index() {
         EXPEDICION:doc.expedicion.substring(0,10),
         VENCIMIENTO:doc.vencimientoReal!==undefined?doc.vencimientoReal.substring(0,10):doc.vencimientoComision.substring(0,10), 
         TOTAL:doc.total,
-        COBRANZA:doc.cobranza,
+        COBRANZA:doc.pendienteInicio,
         COBRADO:doc.cobrado, 
         ATIEMPO:doc.aTiempo,
         FUERATIEMPO:doc.fueraTiempo
@@ -60,7 +60,7 @@ function index() {
     })
     setCobranza(prev=>{
       let sum = 0
-      documentos.forEach(doc=>sum+=doc.cobranza)
+      documentos.forEach(doc=>sum+=doc.pendienteInicio+doc.adelantado)
       return sum
     })
     setATIempo(prev=>{
