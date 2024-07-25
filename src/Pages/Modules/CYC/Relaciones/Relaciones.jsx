@@ -9,6 +9,7 @@ import { BsFiletypePdf } from 'react-icons/bs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import Logo from '../../../../Components/Logo.jsx';
+import DraggableTable from '../../../../Components/DraggableTable/index.jsx';
 function Relaciones() {
   //Partes para el componente Table
   const colsN = ['', 'No', 'Fecha', 'Serie', 'Folio', 'Razon Social', 'Total', 'Pendiente', 'Vencimiento', 'Ciudad', 'Observaciones'];
@@ -245,10 +246,13 @@ function Relaciones() {
       </div>
       <br />
       <div className=' flex justify-center'>
-        <Table colsNames={colsN} colsKeys={colsKeys} values={objetos} manage={setObjetos}/>
+        <Table colsNames={colsN} colsKeys={colsKeys} values={objetos} manage={setObjetos}/>      
       </div>
     </div>
   )
 }
 
 export default Relaciones
+
+//
+//<DraggableTable />

@@ -1,26 +1,26 @@
 import React from 'react'
 import Th from './Th'
 import Td from './Td';
-function Tr(props) {
+function Tr({colsNames, type, row, fn, colsKeys, data, colsHigh, colsFn, id, dragRef, draggable, handler}) {
     const cells = new Array();
-    const end = props.colsNames.length
+    const end = colsNames.length
     for(let i=0; i<end; i++){
-        if(props.type===1){
+        if(type===1){
             cells.push(
-                <Th text = {props.colsNames[i]} row={props.row} col={i} key={i} fn={()=>{props.fn(props.colsKeys[i])}}/>
+                <Th text = {colsNames[i]} row={row} col={i} key={i} fn={()=>{fn(colsKeys[i])}}/>
             )
         }else{
-            const data = props.colsKeys[i]=='NUMBER'?props.row+1:props.data[props.colsKeys[i]];
+            const newData = colsKeys[i]=='NUMBER'?row+1:data[colsKeys[i]];
             let highlight='';
-            const indexOfHighlight = props.colsHigh!=undefined?props.colsHigh.indexOf(props.colsKeys[i]):-1;
-            if(indexOfHighlight!=-1)highlight = props.colsFn[indexOfHighlight](data);
+            const indexOfHighlight = colsHigh!=undefined?colsHigh.indexOf(colsKeys[i]):-1;
+            if(indexOfHighlight!=-1)highlight = colsFn[indexOfHighlight](newData);
             cells.push(
-                <Td content = {data} row={props.row} col={i} key={i} highlight={highlight}/>
+                <Td content = {newData} row={row} col={i} key={i} highlight={highlight}/>
             )
         }
     }
     return (
-    <tr id={props.id}>
+    <tr id={id} ref={dragRef} {...draggable} {...handler}>
         {cells}
     </tr>
   )

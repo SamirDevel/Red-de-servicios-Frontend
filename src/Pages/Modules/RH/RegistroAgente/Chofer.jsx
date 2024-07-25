@@ -92,9 +92,9 @@ function Chofer() {
       const respuesta = await fns.PostData('/recursos.humanos/chofer/crear',obj);
       if(respuesta['mensaje']!==undefined){
         alert(respuesta['mensaje'])
-        window.location.reload();
       }
       else alert(respuesta)
+      window.location.reload();
     }
   }
 

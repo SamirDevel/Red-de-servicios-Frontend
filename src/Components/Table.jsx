@@ -1,6 +1,8 @@
 import Tr from './Tr'
 import { useState, useEffect } from 'react';
-function Table(props) {
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { fns } from '../Functions';
+function Table({manage, values, transposed, colsNames, colsKeys, colsHigh, colsFn, theme}) {
     
     function quicksort(array, criterio) {
         if (array.length <= 1) {
@@ -27,6 +29,20 @@ function Table(props) {
         }
         return reversequicksort(right,criterio).concat(array[0], reversequicksort(left, criterio));
     };
+
+    function onDragEnd(result) {
+        if (!result.destination) {
+          return;
+        }
+    
+        const reorderedItems = fns.reorder(
+          values,
+          result.source.index,
+          result.destination.index
+        );
+    
+        manage(reorderedItems);
+      }
     //states
     const [reversed, setReversed] = useState(false);
     const [criterio, setCriterio] = useState('');
@@ -36,59 +52,74 @@ function Table(props) {
     },[criterio]);
 
     useEffect(()=>{
-        if(props.manage!=undefined){
+        if(manage!=undefined){
             if(reversed)
-                props.manage(reversequicksort(props.values,criterio));
-            else props.manage(quicksort(props.values,criterio));
+                manage(reversequicksort(values,criterio));
+            else manage(quicksort(values,criterio));
         }
     },[reversed]);
 
     const heads= (()=>{
         const heads = new Array();
-        if(props.transposed===true){
-            heads.push(props.colsNames[0]);
-            const end = props.values.length;
-            for(let i=0; i<end; i++)heads.push(props.values[i][props.colsKeys[0]]);
+        if(transposed===true){
+            heads.push(colsNames[0]);
+            const end = values.length;
+            for(let i=0; i<end; i++)heads.push(values[i][colsKeys[0]]);
         }
         return heads
     })();
-    const head = <Tr transposed={props.transposed} type={1} colsNames={props.transposed===true?heads:props.colsNames} colsKeys={props.colsKeys} row={-1} fn={props.transposed===true?undefined:sort}/>
+    const head = <Tr transposed={transposed} type={1} colsNames={transposed===true?heads:colsNames} colsKeys={colsKeys} row={-1} fn={transposed===true?undefined:sort}/>
     const array = new Array();
-    const end = props.values.length;
-    if(props.transposed===true){
-        const end2 = props.colsKeys.length
+    const end = values.length;
+    if(transposed===true){
+        const end2 = colsKeys.length
         const newKeys = new Array();
         newKeys.push('HEAD');
         for(let i=1; i<end2; i++){
             const obj = {
-                HEAD:props.colsNames[i]
+                HEAD:colsNames[i]
             }
             for(let j=0; j<end; j++){
-                obj[`${j}`] = props.values[j][props.colsKeys[i]];
+                obj[`${j}`] = values[j][colsKeys[i]];
                 if(newKeys.includes(`${j}`)===false)newKeys.push(`${j}`);
             }
             array.push(
-                < Tr 
-                    colsHigh={props.colsHigh} colsFn={props.colsFn}
-                    type={2} colsNames={heads} 
-                    data={obj} row={i} colsKeys={newKeys} 
-                    key={i} id={`${obj}`}
-                />
+                <Draggable key={i} draggableId={i.toString()} index={i}>
+                    {
+                        provided=>(
+                            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                < Tr 
+                                colsHigh={colsHigh} colsFn={colsFn}
+                                type={2} colsNames={heads} 
+                                data={obj} row={i} colsKeys={newKeys} 
+                                key={i} id={`${obj}`}
+                                />
+                            </div>
+                        )
+                    }
+                </Draggable>
             )
         }
     }else{
         for(let i=0; i<end; i++){
             array.push(
-                < Tr
-                    colsHigh={props.colsHigh} colsFn={props.colsFn}
-                    type={2} colsNames={props.colsNames} 
-                    data={props.values[i]} row={i} colsKeys={props.colsKeys} 
-                    key={i} id={props.values[i]['ID']}
-                />
+                <Draggable key={i} draggableId={i.toString()} index={i}>
+                    {
+                        provided=>(
+                            < Tr
+                                colsHigh={colsHigh} colsFn={colsFn}
+                                type={2} colsNames={colsNames} 
+                                data={values[i]} row={i} colsKeys={colsKeys} 
+                                key={i} id={values[i]['ID']}
+                                dragRef={provided.innerRef} draggable={provided.draggableProps} handler={provided.dragHandleProps}
+                            />
+                        )
+                    }
+                </Draggable>
             )
         }
     }
-    if(props.transposed===true)console.log(array);
+    if(transposed===true)console.log(array);
     function sort(object){
         if(object!=criterio){
             setCriterio(object);
@@ -97,14 +128,21 @@ function Table(props) {
         }
     }
     return (
-    <table className={`${props.values.length>0?'visible':'hidden'}`}>
-        <thead className={props.theme}>
-            {head}
-        </thead>
-        <tbody>
-            {array}
-        </tbody>
-    </table>
+    <DragDropContext onDragEnd={onDragEnd}>
+        <table className={`${values.length>0?'visible':'hidden'}`}>
+            <thead className={theme}>
+                {head}
+            </thead>
+            <Droppable droppableId='droppableRow'>
+                {provided=>(
+                    <tbody {...provided.droppableProps} ref={provided.innerRef}>
+                        {array}
+                        {provided.placeholder}
+                    </tbody>
+                )}
+            </Droppable>
+        </table>
+    </DragDropContext>
   )
 }
 

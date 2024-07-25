@@ -9,9 +9,7 @@ document.documentElement.style.height = '100%'
 document.body.style.height = '100%'
 document.getElementById('root').style.height = '100%'
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
     <Provider store={store}>
       <App />
     </Provider>
-  </React.StrictMode>,
 )

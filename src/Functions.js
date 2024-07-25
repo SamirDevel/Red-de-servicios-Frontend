@@ -233,5 +233,13 @@ export function getDatosFiscales(empresa){
         rfc:''
     }
   }
+
+  export function reorder(list=[], startIndex=0, endIndex=0) {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+  
+    return result;
+  }
 //#endregion
 export * as fns from './Functions.js'
