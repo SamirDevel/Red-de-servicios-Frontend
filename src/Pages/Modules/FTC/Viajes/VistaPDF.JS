@@ -76,6 +76,6 @@ export  default function makePDF(viaje)
     doc.text('__________________________________________________________________________',9,finalY+13);
     doc.text('RECEPCIÓN DE DOCUMENTOS',225,finalY+19) ;
     doc.text('__________________________________________________________________________',190,finalY+13);
-    doc.text('AUTORIZACIÓN CREDITO Y COBRANZA',35,finalY+19) ;
+    doc.text('REVISÓ ALMACEN',35,finalY+19) ;
     return doc
   }
