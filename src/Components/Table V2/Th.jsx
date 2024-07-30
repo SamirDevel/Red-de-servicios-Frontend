@@ -8,7 +8,7 @@ function Th(props) {
     },[reversed])
 
     return (
-        <th className='text-xl cursor-pointer select-none max-w-fit min-w-fit w-fit' onClick={e=>setReversed(reversed=>!reversed)}>
+        <th className='text-xl cursor-pointer max-w-fit min-w-fit w-fit' onClick={e=>setReversed(reversed=>!reversed)}>
             {props.content}
         </th>
     )
