@@ -1,10 +1,10 @@
-function IconButton(props) {
+function IconButton({fn, id, icon}) {
     return (
     <button
-        onClick={props.fn}
-        id={props.id}
+        onClick={fn}
+        id={id}
     >
-        {props.icon}
+        {icon}
     </button>
   )
 }

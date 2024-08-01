@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 
-function Th(props) {
+function Th({clicked, content}) {
     const [reversed, setReversed] = useState(false);
     
     useEffect(()=>{
-        props.clicked(reversed);
+        clicked(reversed);
     },[reversed])
 
     return (
         <th className='text-xl cursor-pointer max-w-fit min-w-fit w-fit' onClick={e=>setReversed(reversed=>!reversed)}>
-            {props.content}
+            {content}
         </th>
     )
 }

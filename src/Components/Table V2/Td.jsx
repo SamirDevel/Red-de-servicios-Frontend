@@ -1,17 +1,16 @@
 import { useState, useEffect } from "react"
 import * as fns from '../../Functions'
-function Td(props) {
-  const [value, setValue] = useState(props.content)
+function Td({content, type, bgCell}) {
   function display(){
-    if(props.type==='pesos')return fns.moneyFormat(value)
-    if(props.type==='%')return `${fns.fixed2String(value)}%`
-    if(props.type==='date')return `${fns.dateString(new Date(value))}`
-    if(props.type==='float')return `${fns.fixed2String(value)}`
-    else return value
+    if(type==='pesos')return fns.moneyFormat(content)
+    if(type==='%')return `${fns.fixed2String(content)}%`
+    if(type==='date')return `${fns.dateString(new Date(content))}`
+    if(type==='float')return `${fns.fixed2String(content)}`
+    else return content
   }
   return (
-    <td>
-      <div className="flex flex-col justify-center items-center">
+    <td className={`${bgCell!==undefined?bgCell(content):''}`}>
+      <div className={`flex flex-col justify-center items-center`}>
         {display()}
       </div>
     </td>

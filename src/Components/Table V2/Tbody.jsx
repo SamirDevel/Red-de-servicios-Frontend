@@ -1,14 +1,24 @@
 import { useState, useEffect } from 'react'
 import Tr from './Tr'
+import { Droppable } from 'react-beautiful-dnd'
 
-function Tbody(props) {
+function Tbody({ values, heads}) {
     function makeRows(){
-        return props.values.map((value, index)=><Tr key={props.keyName!==undefined?value[props.keyName]:index} heads={props.heads} value ={value}type='body'/>)
+        return  values.map((value, index)=>{
+            return <Tr key={index} heads={heads} value ={value} type='body' index={index}/>
+        })
     }
     return (
-        <tbody>
-            {makeRows()}
-        </tbody>
+        <Droppable droppableId='droppableRow'>
+            {
+                provided=>(
+                    <tbody {...provided.droppableProps} ref={provided.innerRef}>
+                        {makeRows()}
+                        {provided.placeholder}
+                    </tbody>
+                )
+            }
+        </Droppable>
     )
 }
 

@@ -33,6 +33,9 @@ th, td{
 .blueHover:hover{
   color:steelblue;
 }
+.greenHover:hover{
+  color: green;
+}
 
 .formatCol{
   display: flex;

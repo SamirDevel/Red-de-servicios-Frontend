@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react'
 import Tr from './Tr'
 
-function Thead(props) {
-  const [heads, setHeads] = useState(props.heads)
-
+function Thead({ heads, clicked, theme}) {
   return (
-    <thead className={`${props.theme}`}>
-      <Tr heads={heads} type='head' clicked={props.clicked}/>
+    <thead className={`${theme} select-none`}>
+      <Tr heads={heads} type='head' clicked={clicked}/>
     </thead>
   )
 }

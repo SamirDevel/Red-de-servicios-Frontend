@@ -102,7 +102,12 @@ export function filtrar(arreglo1, arreglo2, criterio){
     });
 }
 
-export function quicksort(array, criterio) {
+function compareToQuicksort(reversed, current, pivot){
+    return reversed 
+        ?current<pivot 
+        :current>pivot 
+}
+export function quicksort(array, criterio, reversed=false){
     if (array.length <= 1) {
       return array;
     }
@@ -110,9 +115,13 @@ export function quicksort(array, criterio) {
     const left = []; 
     const right = []
     for (let i = 1; i < array.length; i++) {
-      array[i][criterio] < pivot ? left.push(array[i]) : right.push(array[i]);
+        const current = array[i][criterio];
+        const flag = compareToQuicksort(reversed, current, pivot)
+        flag 
+            ? left.push(array[i]) 
+            :right.push(array[i]);
     }
-    return quicksort(left,criterio).concat(array[0], quicksort(right, criterio));
+    return quicksort(left,criterio, reversed).concat(array[0], quicksort(right, criterio, reversed));
 }
 
 export function find(array, criteria, value,toFind){
@@ -242,4 +251,10 @@ export function getDatosFiscales(empresa){
     return result;
   }
 //#endregion
+export function inArray(array=[], callback, value){
+    for(const item of array){
+        if(callback(item)===value)return true
+    }
+    return false
+}
 export * as fns from './Functions.js'

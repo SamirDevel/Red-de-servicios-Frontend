@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Table from '../../../../Components/Table'
+import Table from '../../../../Components/Table V2'
 import Input from '../../../../Components/Input';
 import Select from '../../../../Components/Select';
 import IconButton from '../../../../Components/IconButton';
@@ -11,7 +11,12 @@ import autoTable from 'jspdf-autotable';
 import Logo from '../../../../Components/Logo.jsx';
 function Relaciones() {
   //Partes para el componente Table
-  const colsN = ['', 'No', 'Fecha', 'Serie', 'Folio', 'Razon Social', 'Total', 'Pendiente', 'Vencimiento', 'Ciudad', 'Observaciones'];
+  const colsN = [
+    {text:'Eliminar', type:'string'}, {text:'No', type:'string'}, {text:'Fecha', type:'string'},
+    {text:'Serie', type:'string'}, {text:'Folio', type:'string'}, {text:'Razon Social', type:'string'}, 
+    {text:'Total', type:'pesos'}, {text:'Pendiente', type:'pesos'},
+    {text:'Vencimiento', type:'string'}, {text:'Ciudad', type:'string'}, {text:'Observaciones', type:'string'}
+  ];
   const colsKeys = ['BORRAR', 'NUMBER', 'EXPEDICION', 'SERIE', 'FOLIO', 'NOMBRE', 'TOTAL', 'PENDIENTE', 'VENCIMIENTO', 'MUNICIPIO', 'OBSERVACIONES'];
   //States
   const [series, setSeries] = useState([]);
@@ -23,11 +28,11 @@ function Relaciones() {
   const [folio, setFolio] = useState('');
   const [periodoInicial, setPeriodoInicial] = useState('');
   const [periodoFinal, setPeriodoFinal] = useState('');
-  const [objeto, setObjeto] = useState({});
-  const [facturas, setFacturas] = useState([]);
   const [objetos, setObjetos] = useState([]);
-  const [eliminado, setEliminado] = useState(0);
+  const [eliminado, setEliminado] = useState({});
+  const [filtrados, setFiltrados] = useState([])
   const [pendientes, setPendientes] = useState([]);
+  const [commits, setCommits] = useState([])
   
   //Effects
   useEffect(()=>{
@@ -45,33 +50,22 @@ function Relaciones() {
   },[]);
 
   useEffect(()=>{
-    let repetida = false;
-      objetos.forEach(item=>{
-        if(objeto['ID']==item['ID']){
-          repetida = true;
-          return;
-        }
-      });
-    if(objeto['ID']!=undefined&&!repetida){
-      setObjetos([...objetos, ...[objeto]]);
+    const keys = Object.keys(eliminado)
+    if(keys.length>0){
+      setFiltrados(objetos.filter(obj=>(obj.SERIE!==eliminado.SERIE)||(obj.FOLIO!==eliminado.FOLIO)));
+      setCommits(commits.filter(commit=>(commit.serie!==eliminado.SERIE)||commit.folio!==eliminado.FOLIO))
+      setPendientes(pendientes.filter(pendiente=>(pendiente.serie!==eliminado.SERIE)||(pendiente.folio!==eliminado.FOLIO)))
+      setObjetos([]);
+      setEliminado({});
     }
-    if(repetida==true)alert('La factura ya se encuentra den el documento');
-  },[objeto]);
+  }, [eliminado])
 
   useEffect(()=>{
-    //console.log(facturas);
-  },[objetos]);
-
-  useEffect(()=>{
-    //console.log(facturas);
-  },[facturas]);
-
-  useEffect(()=>{
-
-    setObjetos(objetos.filter(objeto=>objeto['ID']!=eliminado));
-    setFacturas(facturas.filter(factura=>factura['ID']!=eliminado));
-    setPendientes(facturas.filter(factura=>factura['ID']!=eliminado));
-  },[eliminado])
+    if(filtrados.length>0&&objetos.length===0){
+      setObjetos(filtrados);
+      setFiltrados([])
+    }
+  }, [filtrados])
 
   //Funciones
   async function validar(){
@@ -93,18 +87,13 @@ function Relaciones() {
         setFolio('');
       }else{
         console.log(factura);
-        let {id, expedicion, serie, folio, total, pendiente, vencimientoReal, atraso} = factura;
-        expedicion = expedicion.substring(0,10);
-        vencimientoReal.substring(0,10);
-        total = Functions.moneyFormat(total);
-        pendiente = Functions.moneyFormat(pendiente);
+        const {id, expedicion, serie, folio, total, pendiente, vencimientoReal, atraso} = factura;
         const obj = {
-          ID:id,
           BORRAR: <IconButton icon={
               <AiTwotoneDelete className='redHover' size={25}/>
-          } id={id} fn={e=>{setEliminado(id)}}/>,
-          NO: '',
-          EXPEDICION:expedicion,
+          } id={id} fn={e=>{setEliminado({SERIE:serie, FOLIO:folio})}}/>,
+          NO: objetos.length + 1,
+          EXPEDICION:expedicion.substring(0,10),
           SERIE:serie,
           FOLIO:folio,
           NOMBRE:factura['idCliente']['nombre'],
@@ -112,13 +101,14 @@ function Relaciones() {
           PENDIENTE:pendiente,
           VENCIMIENTO:Functions.dateString(new Date(vencimientoReal)),
           MUNICIPIO:factura['idCliente']['domicilios'][0]['municipio'],
-          OBSERVACIONES:<Input type = 'text' id={`observacion-${id}`}/>
+          OBSERVACIONES:<Input type = 'text' id={`observacion-${serie}-${folio}`}/>
         }
-        setObjeto(obj);
-        setFacturas([...facturas, factura]);
-        if(atraso<0){
-          setPendientes([...pendientes, factura]);
-        }
+        if(Functions.inArray(objetos, item=>`${item['SERIE']}-${item['FOLIO']}`, `${serie}-${folio}`)===false){
+          if(atraso<0){
+            setPendientes([...pendientes, factura]);
+          }
+          setObjetos(prev=>[...prev, obj])
+        }else alert('Factura ya en el documento')
         setFolio('');
       }
     } catch (error) {
@@ -135,7 +125,7 @@ function Relaciones() {
         array.push(i+1);
         for(let j=1; j<end2-1; j++)
           array.push(objetos[i][heads[j]]);
-        array.push(document.getElementById(`observacion-${objetos[i]['ID']}`).value)
+        array.push(document.getElementById(`observacion-${objetos[i]['SERIE']}-${objetos[i]['FOLIO']}`).value)
         array2.push(array);
         array = new Array();
       }
@@ -191,6 +181,54 @@ function Relaciones() {
       alert('No se ha seleccionado un periodo valido del documento');
     }
   }
+
+  function getCommit(serie, folio, array){
+    const text = document.getElementById(`observacion-${serie}-${folio}`).value;
+    array.push({serie, folio, text})
+  }
+
+  function handdleOrderObjetos(array=[]){
+    const texts = new Array()
+    const result = array.map((item, index)=>{
+      getCommit(item['SERIE'], item['FOLIO'], texts);
+      return {
+        ...item,
+        NO:index+1,
+      }
+    })
+    setCommits(texts)
+    setObjetos(result);
+  }
+  function handdleExport(){
+    const columns = [
+      {header:'No', key:'NO'},
+      {header:'Fecha', key:'EXPEDICION'},
+      {header:'Serie', key:'SERIE'},
+      {header:'Folio', key:'FOLIO'},
+      {header:'Razon Social', key:'NOMBRE'},
+      {header:'Total', key:'TOTAL'},
+      {header:'Pendiente', key:'PENDIENTE'},
+      {header:'Vencimiento', key:'VENCIMIENTO'},
+      {header:'Ciudad', key:'MUNICIPIO'},
+      {header:'Observaciones', key:'OBSERVACIONES'},
+    ]
+    const rows = objetos.map(obj=>{
+      return {
+        ...obj,
+        OBSERVACIONES:document.getElementById(`observacion-${obj['SERIE']}-${obj['FOLIO']}`).value
+      }
+    })
+    //console.log(rows)
+    return {columns, rows}
+  }
+  function recommit(){
+    commits.forEach(commit=>{
+      const input = document.getElementById(`observacion-${commit['serie']}-${commit['folio']}`)
+      if(input){
+        input.value = commit.text
+      }
+    })
+  }
   return (
     <div>  
       <div className=' flex flex-row w-'>
@@ -211,22 +249,22 @@ function Relaciones() {
         <label htmlFor="">
           PERIODO DESDE: 
           {" "}
-          <Input type = 'date' id='periodoInicial' change = {e=>{setPeriodoInicial(e.target.value)}} value = {periodoInicial}/>
+          <Input type='date' id='periodoInicial' change={e=>{setPeriodoInicial(e.target.value)}} value={periodoInicial}/>
         </label>
         <label htmlFor="">
           HASTA: 
           {" "}
-          <Input type = 'date' id='periodoFinal' change = {e=>{setPeriodoFinal(e.target.value)}} value = {periodoFinal}/>
+          <Input type='date' id='periodoFinal' change={e=>{setPeriodoFinal(e.target.value)}} value={periodoFinal}/>
         </label>
         <label htmlFor="">
           RUTA: 
           {" "}
-          <Select list = {rutas} criterio = {'nombre'} value = {ruta} fn = {e=>{setRuta(e.target.value)}}/>
+          <Select list={rutas} criterio={'nombre'} value={ruta} fn={e=>{setRuta(e.target.value)}}/>
         </label>
         <label htmlFor="">
           AGENTE: 
           {" "}
-          <Select list = {agentes} criterio = {'nombre'} value = {agente} fn = {e=>{setAgente(e.target.value)}}/>
+          <Select list={agentes} criterio={'nombre'} value={agente} fn={e=>{setAgente(e.target.value)}}/>
         </label>
       </div>
       <div>
@@ -245,10 +283,13 @@ function Relaciones() {
       </div>
       <br />
       <div className=' flex justify-center'>
-        <Table colsNames={colsN} colsKeys={colsKeys} values={objetos} manage={setObjetos}/>      
+        <Table colsHeads={colsN} colsKeys={colsKeys} list={objetos} manage={handdleOrderObjetos} handdleExport={handdleExport} aftherRendered={recommit}/>
       </div>
     </div>
   )
 }
 
 export default Relaciones
+/*
+
+*/

@@ -4,14 +4,24 @@ import LabelInput from '../../../../Components/LabelInput'
 import LabelSelect from '../../../../Components/LabelSelect'
 import Graficas from '../../../../Components/Graficas'
 import Predictive from '../../../../Components/Predictive'
-import Table from '../../../../Components/Table'
+import Table from '../../../../Components/Table V2'
 import IconButton from '../../../../Components/IconButton'
 import * as Functions from '../../../../Functions.js'
 function SaldoPendeinte() {
   //consts
-  const colsNames = ['Abrir','Codigo','Expedicion','Factura','Cliente','Total','Saldo','Vencimiento', 'Dias Restantes','Clasificacion','Observaciones'];
-  const colsKeys = ['ABRIR','CODIGO','EXPEDICION', 'FACTURA', 'NOMBRE', 'TOTAL', 'PENDIENTE', 'VENCIMIENTO', 'ATRASO','CLASIFICACION','OBSERVACIONES'];
-  const resaltarCols = ['ATRASO'];
+  const colsHeads = [
+    {text:'Abrir', type:'string'},
+    {text:'Codigo', type:'string'},
+    {text:'Expedicion', type:'date'},
+    {text:'Factura', type:'string'},
+    {text:'Cliente', type:'string'},
+    {text:'Total', type:'pesos'},
+    {text:'Saldo', type:'pesos'},
+    {text:'Vencimiento', type:'date'},
+    {text:'Dias Restantes', type:'string', bg:resaltar},
+    {text:'Clasificacion', type:'string'},
+    {text:'Observaciones', type:'string'},
+  ]
   const resaltarFns = [resaltar];
   const gray = 'rgba(59, 57, 49, 0.15)'
   //className='h-'
@@ -143,16 +153,16 @@ function SaldoPendeinte() {
       const screenHeight = window.screen.height;
       const obj = {
         ABRIR:<IconButton icon={ <RxOpenInNewWindow size={25}/>} id={`${serie}-${folio}`} fn={()=>window.open(`${window.location.href}/documento/${serie}/${folio}`,'_blank',`width=${Math.round(screenWidth*0.4)}, height=${screenHeight<1000?Math.round(screenHeight*0.6) :Math.round(screenHeight*0.457)}`)}/>,
+        CODIGO:idCliente.codigo,
         EXPEDICION: expedicion.substring(0,10),
         FACTURA: `${serie}-${folio}`,
         NOMBRE:idCliente.nombre,
-        TOTAL: Functions.moneyFormat(total),
-        PENDIENTE: Functions.moneyFormat(pendiente),
+        TOTAL: total,
+        PENDIENTE: pendiente,
         VENCIMIENTO: vencimientoReal.substring(0,10),
-        CLASIFICACION: idCliente.clasificacionClienteReal,
         ATRASO:atraso,
+        CLASIFICACION: idCliente.clasificacionClienteReal,
         OBSERVACIONES:observacion!==undefined?observacion:'',
-        CODIGO:idCliente.codigo
       }
       return obj;
     });
@@ -208,6 +218,29 @@ function SaldoPendeinte() {
   function makeUrl(key, value, compare){
     const invalid = (compare!==undefined?compare:'');
     return value==invalid?'':`${key}=${value}&`
+  }
+  function handdleExport(array){
+    const columns = [
+      {header:'No.', key:'NO'},
+      {header:'Codigo', key:'CODIGO'},
+      {header:'Expedicion', key:'EXPEDICION'},
+      {header:'Factura', key:'FACTURA'},
+      {header:'Cliente', key:'NOMBRE'},
+      {header:'Total', key:'TOTAL'},
+      {header:'Saldo', key:'PENDIENTE'},
+      {header:'Vencimiento', key:'VENCIMIENTO'},
+      {header:'Dias Restantes', key:'ATRASO'},
+      {header:'Clasificacion', key:'CLASIFICACION'},
+      {header:'Observaciones', key:'OBSERVACIONES'},
+    ]
+    const rows = array.map((obj, index)=>{
+      return {
+        ...obj,
+        NO:index+1
+      }
+    })
+    //console.log(rows)
+    return {columns, rows}
   }
   return (
     <div className='flex flex-col'>
@@ -291,10 +324,10 @@ function SaldoPendeinte() {
         </div>
       </div>
       <div className={`flex flex-col mx-32 text-sm items-center ${(reduced==true||ignored.length>0)?'hidden':'visible'}`}>
-        <Table theme='bg-blue-950 text-white' colsNames={colsNames} colsKeys={colsKeys} colsHigh={resaltarCols} colsFn={resaltarFns} values={objetos} manage={setObjetos}/>
+        <Table theme='bg-blue-950 text-white' colsHeads={colsHeads} list={objetos} manage={setObjetos} handdleExport={()=>handdleExport(objetos)}/>
       </div>
       <div className={`flex flex-col mx-32 text-sm items-center ${(reduced==true||ignored.length>0)?'visible':'hidden'}`}>
-        <Table theme='bg-blue-950 text-white' colsNames={colsNames} colsKeys={colsKeys} colsHigh={resaltarCols} colsFn={resaltarFns} values={filtred} manage={setFiltred}/>
+        <Table theme='bg-blue-950 text-white' colsHeads={colsHeads} list={filtred} manage={setFiltred} handdleExport={()=>handdleExport(filtred)}/>
       </div>
     </div>
   )
