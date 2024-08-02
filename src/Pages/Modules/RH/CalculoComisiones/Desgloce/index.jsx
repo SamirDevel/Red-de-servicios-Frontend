@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom"
 import { useState, useEffect } from "react"
 import * as fns from '../../../../../Functions'
-import Table2 from "../../../../../Components/Table V2"
+import Table from "../../../../../Components/Table V2"
 function index() {
   const params = useParams();
   const [agente, setAgente] = useState(undefined)
@@ -87,6 +87,26 @@ function index() {
   useEffect(()=>{
     setObjetos(objetos)
   }, [objetos])
+  
+  function handdleExport(){
+    const columns = [
+      {header:'Factura', key:'FACTURA'},
+      {header:'Cliente',key:'CLIENTE'},
+      {header:'Expedicion',key:'EXPEDICION'},
+      {header:'Vencimiento',key:'VENCIMIENTO'},
+      {header:'Total de la factura',key:'TOTAL'},
+      {header:'Por cobrar',key:'PENDIENTEI'},
+      {header:'Adelanto',key:'ADELANTO'},
+      {header:'Cobrado',key:'COBRADO'},
+      {header:'A Tiempo',key:'ATIEMPO'},
+      {header:'Fuera de Tiempo',key:'FUERATIEMPO'},
+      {header:'Cancelado',key:'CANCELADO'},
+      {header:'Cobranza',key:'COBRANZA'},
+      {header:'No Cobrado', key:'PENDIENTEF'},
+    ]
+    const rows = objetos.map(obj=>obj)
+    return {columns, rows}
+  }
 
 
 
@@ -107,7 +127,7 @@ function index() {
           )}
         </div>
       })()}
-      <Table2  theme='bg-blue-950 text-white' colsHeads={comisionHeads} list={objetos} manage={setObjetos}/>
+      <Table  theme='bg-blue-950 text-white' colsHeads={comisionHeads} list={objetos} manage={setObjetos} handdleExport={handdleExport}/>
     </div>
   )
 }
