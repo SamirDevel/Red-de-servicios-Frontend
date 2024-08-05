@@ -116,15 +116,20 @@ function Relaciones() {
     }
   }
 
-  function getData(heads){
+  function getData(heads, moneyIndex=[]){
     let array = new Array();
     const array2 = new Array();
       const end = objetos.length;
       const end2 = heads.length;
       for(let i=0; i<end; i++){
         array.push(i+1);
-        for(let j=1; j<end2-1; j++)
-          array.push(objetos[i][heads[j]]);
+        for(let j=1; j<end2-1; j++){
+          const toAdd = objetos[i][heads[j]]
+          const value = moneyIndex.includes(j)
+            ?Functions.moneyFormat(toAdd)
+            :toAdd
+          array.push(value);
+        }
         array.push(document.getElementById(`observacion-${objetos[i]['SERIE']}-${objetos[i]['FOLIO']}`).value)
         array2.push(array);
         array = new Array();
@@ -155,7 +160,7 @@ function Relaciones() {
       doc.text(`AGENTE: ${agente}`,35,37);
       doc.autoTable({
         head:[['No', 'Fecha', 'Serie', 'Folio', 'Razon Social', 'Total', 'Pendiente', 'Vencimiento', 'Ciudad', 'Observaciones']],
-        body: getData(heads),
+        body: getData(heads, [5, 6]),
         startY: 42,
         styles:{
           fontSize: 8,
@@ -283,7 +288,7 @@ function Relaciones() {
       </div>
       <br />
       <div className=' flex justify-center'>
-        <Table colsHeads={colsN} colsKeys={colsKeys} list={objetos} manage={handdleOrderObjetos} handdleExport={handdleExport} aftherRendered={recommit}/>
+        <Table colsHeads={colsN} colsKeys={colsKeys} list={objetos} manage={handdleOrderObjetos} handdleExport={handdleExport} aftherRendered={recommit} limit={120}/>
       </div>
     </div>
   )

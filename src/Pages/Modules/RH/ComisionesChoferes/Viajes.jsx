@@ -51,6 +51,18 @@ function Viajes() {
         }
         setViajesPDF()
     },[viajes])
+
+    function handdleExport(){
+        const columns = [
+            {header:'Viaje',key:'VIAJE'},
+            {header:'Vehiculo', key:'VEHICULO'},
+            {header:'Ruta',key:'RUTA'},
+            {header:`Tipo\nde\nRuta`,key:'TIPOR'},
+            {header:'Fecha\nde\nFinalizacion',key:'FIN'},
+        ]
+        const rows = objetos.map(obj=>obj)
+        return {columns, rows}
+    }
     return (
         <div className="flex flex-col justify-center items-center">
             <br />
@@ -66,7 +78,7 @@ function Viajes() {
                 <label>{`Desde ${params['fechaI']} hasta ${params['fechaF']}`}</label>
             </div>
             <br />
-            <Table theme='bg-blue-950 text-white' colsHeads={heads} list={objetos} manage={setObjetos}/>
+            <Table theme='bg-blue-950 text-white' colsHeads={heads} list={objetos} manage={setObjetos} handdleExport={handdleExport}/>
         </div>
     )
 }

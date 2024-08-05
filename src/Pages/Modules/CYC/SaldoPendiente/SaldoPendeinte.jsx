@@ -140,15 +140,31 @@ function SaldoPendeinte() {
   },[activo]);
 
   useEffect(()=>{
-    //console.log(facturas);
-    let acumT=0, acumA=0, acumV=0, acumR=0, acumAz=0;
+    if(objetos.length>0)acumulate(objetos)
+      if(filtred.length>0)acumulate(filtred)
+  }, [objetos, filtred])
+
+  function acumulate(array){
+    let acumT=0, acumA=0, acumV=0, acumR=0, acumAz=0;  
+    for(const element of array){
+      const {PENDIENTE, ATRASO} = element
+      acumT+=PENDIENTE;
+      if(ATRASO>2)acumA+=PENDIENTE;
+      else if(ATRASO>=-2&&ATRASO<=2)acumV+=PENDIENTE;
+      else if(ATRASO>=-15&&ATRASO<=-3)acumR+=PENDIENTE;
+      else acumAz+=PENDIENTE;
+    }
+    setTotal(acumT);
+    setAmarillos(acumA);
+    setVerdes(acumV);
+    setRojos(acumR);
+    setAzules(acumAz);
+  }
+
+  useEffect(()=>{
+    //console.log(facturas);    
     const array = facturas.map(item=>{
       const {expedicion, serie, folio, total, pendiente, vencimientoReal, atraso, /*OBSERVACIONES,*/ idCliente, observacion} = item;
-      acumT+=pendiente;
-      if(atraso>2)acumA+=pendiente;
-      else if(atraso>=-2&&atraso<=2)acumV+=pendiente;
-      else if(atraso>=-15&&atraso<=-3)acumR+=pendiente;
-      else acumAz+=pendiente;
       const screenWidth = window.screen.width;
       const screenHeight = window.screen.height;
       const obj = {
@@ -166,11 +182,6 @@ function SaldoPendeinte() {
       }
       return obj;
     });
-    setTotal(acumT);
-    setAmarillos(acumA);
-    setVerdes(acumV);
-    setRojos(acumR);
-    setAzules(acumAz);
     //console.log(array.length);
     setObjetos(array)
     //console.log(facturas);

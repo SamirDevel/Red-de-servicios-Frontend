@@ -3,7 +3,6 @@ import Input from '../../../../Components/Input'
 import BlueBotton from '../../../../Components/BlueBotton'
 import { fns } from '../../../../Functions'
 import Table from '../../../../Components/Table V2'
-import Select from '../../../../Components/Select'
 
 function VentasPeriodo() {
     const [fechaI, setFechaI] = useState('')
@@ -14,7 +13,7 @@ function VentasPeriodo() {
 
     const Heads = [
         {text:'Factura', type:'string'},
-        {text:'Expedicion', type:'string'},
+        {text:'Expedicion', type:'date'},
         {text:'Codigo cliente', type:'string'},
         {text:'Cliente', type:'string'},
         {text:'RFC', type:'string'},
@@ -24,11 +23,11 @@ function VentasPeriodo() {
         {text:'Producto', type:'string'},
         {text:'Familia', type:'string'},
         {text:'Unidades Facturadas', type:'string'},
-        {text:'Costo uniario antes de IVA', type:'string'},
-        {text:'Costo de adquisicion antes de IVA', type:'string'},
-        {text:'Precio Unitario antes de IVA', type:'string'},
-        {text:'Subtotal de venta antes de IVA', type:'string'},
-        {text:'Utilidad antes de IVA', type:'string'},
+        {text:'Costo uniario antes de IVA', type:'pesos'},
+        {text:'Costo de adquisicion antes de IVA', type:'pesos'},
+        {text:'Precio Unitario antes de IVA', type:'pesos'},
+        {text:'Subtotal de venta antes de IVA', type:'pesos'},
+        {text:'Utilidad antes de IVA', type:'pesos'},
     ]
 
     useEffect(()=>{
@@ -39,7 +38,7 @@ function VentasPeriodo() {
             setObjetos(respuesta.map(fac=>{
                 return {
                     FACTURA:`${fac.serie}-${fac.folio}`
-                    ,EXPEDICION:fns.dateString(new Date(fac.expedicion))
+                    ,EXPEDICION:fac.expedicion
                     ,CODIGOCLIENTE:fac.codigoCliente
                     ,CLIENTE:fac.nombreCliente
                     ,RFC:fac.rfc
@@ -49,11 +48,11 @@ function VentasPeriodo() {
                     ,PRODUCTO:fac.nombreProducto
                     ,FAMILIA:fac.familia
                     ,UNIDADES:fac.unidadesCapturadas
-                    ,UNITARIO:fns.moneyFormat(fac.costoUnitario)
-                    ,ESPECIFICO:fns.moneyFormat(fac.costoEspecifico)
-                    ,PRECIO:fns.moneyFormat(fac.precioUnitario)
-                    ,SUBTOTAL:fns.moneyFormat(fac.subTotal)
-                    ,UTILIDAD:fns.moneyFormat(fac.subTotal - fac.costoEspecifico)
+                    ,UNITARIO:fac.costoUnitario
+                    ,ESPECIFICO:fac.costoEspecifico
+                    ,PRECIO:fac.precioUnitario
+                    ,SUBTOTAL:fac.subTotal
+                    ,UTILIDAD:fac.subTotal - fac.costoEspecifico
                 }
             }))
         }
@@ -67,6 +66,29 @@ function VentasPeriodo() {
         }
         console.log(buscado)
     },[buscado, objetos])
+
+    function handdleExport(){
+        const columns = [
+            {header:'Factura', key:'FACTURA'},
+            {header:'Expedicion', key:'EXPEDICION'},
+            {header:'Codigo cliente', key:'CODIGOCLIENTE'},
+            {header:'Cliente', key:'CLIENTE'},
+            {header:'RFC', key:'RFC'},
+            {header:'Agente', key:'AGENTE'},
+            {header:'Ruta', key:'RUTA'},
+            {header:'Codigo producto', key:'CODIGOPRODUCTO'},
+            {header:'Producto', key:'PRODUCTO'},
+            {header:'Familia', key:'FAMILIA'},
+            {header:'Unidades Facturadas', key:'UNIDADES'},
+            {header:'Costo uniario antes de IVA', key:'UNITARIO'},
+            {header:'Costo de adquisicion antes de IVA', key:'ESPECIFICO'},
+            {header:'Precio Unitario antes de IVA', key:'PRECIO'},
+            {header:'Subtotal de venta antes de IVA', key:'SUBTOTAL'},
+            {header:'Utilidad antes de IVA', key:'UTILIDAD'},
+        ]
+        const rows = objetos.map(obj=>obj)
+        return {columns, rows}
+    }
     return (
         <div className='flex flex-col items-center'>
             <div className='flex flex-row'>
@@ -93,7 +115,7 @@ function VentasPeriodo() {
             <span className='my-2'/>
             <BlueBotton text={'Buscar'} fn={()=>setBuscado(true)}/>
             <span className='my-2'/>
-            <Table  theme='bg-blue-950 text-white' colsHeads={Heads} list={objetos} manage={setObjetos}/>
+            <Table  theme='bg-blue-950 text-white' colsHeads={Heads} list={objetos} manage={setObjetos} handdleExport={handdleExport}/>
         </div>
     )
 }

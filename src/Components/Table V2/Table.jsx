@@ -7,13 +7,16 @@ import { fns } from "../../Functions"
 import IconButton from "../IconButton"
 import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
 import ExcelJS from 'exceljs'
-import { saveAs } from "file-saver"
+import Pagination from "./Pagination"
+import DownloadModal from "../DownloadModal"
 
-function Table({colsHeads, list, theme, foots, manage, handdleExport, aftherRendered}) {
+function Table({colsHeads, list, theme, foots, manage, handdleExport, aftherRendered, limit}) {
     const [displayed, setDisplayed] = useState([]);
-
+    const [page, setPage] = useState(0)
+    const [selfLimit, setSelfLimit] = useState(limit!==undefined?limit:30);
+    const [isDownladin, setIsDownloading] = useState(false)
     useEffect(()=>{
-        setDisplayed(list)
+        //setDisplayed(list)
     }, [list])
     useEffect(()=>{
         if(aftherRendered)aftherRendered()
@@ -21,22 +24,26 @@ function Table({colsHeads, list, theme, foots, manage, handdleExport, aftherRend
 
     function handleClickHead(index, reversed){
         if(displayed.length>0){
-            const keys = Object.keys(displayed[0]);
+            const keys = Object.keys(list[0]);
             const key = keys[index];
-            const sorted = fns.quicksort(displayed,key,reversed)
+            const sorted = fns.quicksort(list,key,reversed)
             setDisplayed([])
             manage(sorted)
         }
     }
     function onDragEnd(result) {
+        function operation(index){
+            return (page-1)*selfLimit+index
+        }
         if (!result.destination) {
           return;
         }
-    
+        const origin = operation(result.source.index)
+        const destination = operation(result.destination.index)
         const reorderedItems = fns.reorder(
           list,
-          result.source.index,
-          result.destination.index
+          origin,
+          destination
         );
         setDisplayed([])
         manage(reorderedItems);
@@ -59,31 +66,42 @@ function Table({colsHeads, list, theme, foots, manage, handdleExport, aftherRend
         
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-        saveAs(blob, 'table.xlsx')
+        return blob;
         //console.log(worksheet)
     }
     function isExportable(){
         return handdleExport !== undefined
             ?<>
-            <span className="my-2"/>
-                <IconButton fn={exportToExcell} id='icon' icon={<PiMicrosoftExcelLogoFill size={45} className="greenHover"/>}/>
+                <IconButton fn={()=>setIsDownloading(true)} id='icon' icon={<PiMicrosoftExcelLogoFill size={45} className="greenHover"/>}/>
             </>
             :<></>
     }
 
+    function paginate(paginated, page){
+        setDisplayed(paginated),
+        setPage(page)
+    }
+
     return (
         <div className=" flex flex-col items-end">
+            {(()=>{
+                if(isDownladin===true)return <DownloadModal isOpen={isDownladin} bufferFn={exportToExcell} closefn={()=>setIsDownloading(false)} icon={<PiMicrosoftExcelLogoFill size={45} className="green"/>}/>
+            })()}
+            <span className="my-2"/>
             {isExportable()}
-            <DragDropContext onDragEnd={onDragEnd}>
-                <table className="mx-1 select-none">
-                    <Thead theme={`${theme}`} heads={colsHeads} clicked={handleClickHead}/>
-                    <Tbody heads={colsHeads} values={displayed}/>
-                    {(()=>{                
-                        if(foots!==undefined)return <Tfoot theme={theme} heads={colsHeads} values={foots}/>
-                    })()}
-                </table>
-            </DragDropContext>
-            
+            <span className="my-2"/>
+            <Pagination elements={list} result={paginate} limit={selfLimit}>  
+                <DragDropContext onDragEnd={onDragEnd}>
+                    <table className="mx-1 select-none">
+                        <Thead theme={`${theme}`} heads={colsHeads} clicked={handleClickHead}/>
+                        <Tbody heads={colsHeads} values={displayed}/>
+                        {(()=>{                
+                            if(foots!==undefined)return <Tfoot theme={theme} heads={colsHeads} values={foots}/>
+                        })()}
+                    </table>
+                </DragDropContext>
+            </Pagination>
+            <span className="my-2"/>
         </div>
     )
 }

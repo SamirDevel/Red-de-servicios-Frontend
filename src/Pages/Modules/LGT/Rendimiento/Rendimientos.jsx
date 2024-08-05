@@ -64,12 +64,34 @@ function Rendimientos() {
         if(viajes.length>0)getObjetos();
     }, [viajes])
 
+    function handdleExport(){
+        const columns = [
+            {header:'Empresa', key:'EMPRESA'},
+            {header:'Viaje', key:'VIAJE'},
+            {header:'Ruta', key:'RUTA'},
+            {header:'Chofer', key:'CHOFER'},
+            {header:'Auxiliar', key:'AUXILIAR'},
+            {header:'Vehiculo', key:'VEHICULO'},
+            {header:'Expedicion', key:'EXPEDICION'},
+            {header:'Finalizacion', key:'FINALIZACION'},
+            {header:'Km Inicial', key:'KMI'},
+            {header:'Km final', key:'KMF'},
+            {header:'Recorrido', key:'RECORRIDO'},
+            {header:'Cargas', key:'CARGAS'},
+            {header:'Consumo', key:'CONSUMO'},
+            {header:'Rendimiento', key:'RENDIMIENTO'},
+        ]
+        const rows = objetos.map(obj=>obj)
+
+        return {columns, rows}
+    }
+
     return (
         <div className=' flex flex-col items-center'>
             <br />
             <Filtros area={'logistica'} setDocs={setViajes}/>
             <br />
-            <Table  theme='bg-blue-950 text-white' colsHeads={heads} list={objetos} manage={setObjetos}/>
+            <Table  theme='bg-blue-950 text-white' colsHeads={heads} list={objetos} manage={setObjetos} limit={15} handdleExport={handdleExport}/>
         </div>
     )
 }
