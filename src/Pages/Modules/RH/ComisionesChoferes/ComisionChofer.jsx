@@ -125,7 +125,13 @@ function ComisionChofer() {
             const TOTALL= item['pagadoParadas'];
             const TOTALA = item['pagadoAuxiliar'];
             const subtotal = TOTALF+TOTALJ+TOTALL+TOTALA;
-            const total = subtotal-item['descuentos'];
+            const tipoRecalculo = item['tipoRecalculo'];
+            const recalculo = item['recalculo'];
+            const total = (()=>{
+                if(tipoRecalculo==='')return 0
+                else if(tipoRecalculo==='+')return subtotal + recalculo
+                else if(tipoRecalculo==='-')return subtotal - recalculo
+            })()
             counters.contF += TOTALF;
             counters.contJ += TOTALJ;
             counters.contL += TOTALL;
@@ -137,7 +143,7 @@ function ComisionChofer() {
             counters.contS += subtotal
             counters.contT += total
             counters.contV += item['viajes'];
-            counters.contD += item['descuentos'];
+            counters.contD += recalculo;
             return {
                 HIDE: <IconButton icon={ <GrHide size={25}/>} fn={()=>setHidded(item['chofer'])}/>,
                 CODIGO:item['chofer'],
@@ -152,7 +158,7 @@ function ComisionChofer() {
                 AUXILIAR:item['auxiliar'],
                 TOTALA,
                 SUBTOTAL:subtotal,
-                DESCUENTOS:item['descuentos'],
+                RECALCULOS:item['recalculo'],
                 MOTIVO:item['motivo'],
                 TOTAL:total,
                 BTN:<OpenBtn size={28} url={getUrl(item.codigo!==undefined?item.codigo:item.chofer, fechaI, fechaF, item['tipo'])}/>
@@ -246,8 +252,8 @@ function ComisionChofer() {
                 contVA:conts.contVA,
                 contA:conts.contA,
                 contS:conts.contS,
-                contD:conts.contD,
                 c:'',
+                d:'',
                 contT:conts.contT
             }
         ])
