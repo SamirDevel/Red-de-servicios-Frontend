@@ -16,7 +16,7 @@ function Table({colsHeads, list, theme, foots, manage, handdleExport, aftherRend
     const [selfLimit, setSelfLimit] = useState(limit!==undefined?limit:30);
     const [isDownladin, setIsDownloading] = useState(false)
     useEffect(()=>{
-        //setDisplayed(list)
+        //console.log(list)
     }, [list])
     useEffect(()=>{
         if(aftherRendered)aftherRendered()

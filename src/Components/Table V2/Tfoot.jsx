@@ -5,7 +5,7 @@ function Tfoot(props) {
     const [heads, setHeads] = useState(props.heads)
   
     function makeRows(){
-      return props.values.map((value, index)=><Tr key={props.keyName!==undefined?value[props.keyName]:index} heads={props.heads} value ={value}type='body'/>)
+      return props.values.map((value, index)=><Tr key={props.keyName!==undefined?value[props.keyName]:index} heads={props.heads} value ={value} type='foot' index={-1}/>)
     }
 
     return (

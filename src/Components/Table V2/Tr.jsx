@@ -29,6 +29,7 @@ function Tr({heads, clicked, value, type, index}) {
                 )
             }
         </Draggable>
+        else if(type==='foot')return <tr>{makeBody()}</tr>
     }
     return (
         <>
