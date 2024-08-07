@@ -65,14 +65,20 @@ function ComisionChofer() {
                 const end = toSave.length;
                 let error = false;
                 for(let i=0; i<end; i++){
-                    if(toSave[i].totalApagar<0){
+                    const element = toSave[i];
+                    if(element.totalApagar<0){
                         error=true;
                         alert('No puede tener cantidades negativas');
                         break;
                     }
-                    if(toSave[i].descuento>0&&toSave[i].motivo===''){
+                    if(element.recalculo>0&&element.motivo===''){
                         error=true;
-                        alert('No puede tener un descuento sin un motivo');
+                        alert('No puede tener un ajuste sin un motivo');
+                        break;
+                    }
+                    if(element.recalculo!==0&&element.tipoRecalculo===''){
+                        error=true;
+                        alert('Debe seleccionar el tipo de recalculo de comision');
                         break;
                     }
                 }
@@ -183,7 +189,7 @@ function ComisionChofer() {
                 AUXILIAR:item['aux'],
                 TOTALA,
                 SUBTOTAL:sum,
-                DESCUENTOS:0,
+                AJUSTES:0,
                 MOTIVO:0,
                 TOTAL:sum,
                 BTN:<OpenBtn size={28} url={getUrl(item.codigo!==undefined?item.codigo:item.chofer, fechaI, fechaF, item['tipo'])}/>

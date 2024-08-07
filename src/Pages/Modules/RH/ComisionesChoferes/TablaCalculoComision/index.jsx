@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import ComisionChoferRow from './ComisionChoferRow'
 import { fns } from '../../../../../Functions';
 
-function TablaComisionChofer({rows, save, fn, fechaI, fechaF}) {
+function TablaComisionChofer({rows, save, fn}) {
     const [totalDescuentos, setTotalDescuentos] = useState(0)
     const [descuentos, setDescuentos] = useState([rows])
     const [total, setTotal] = useState(0)
@@ -49,7 +49,8 @@ function TablaComisionChofer({rows, save, fn, fechaI, fechaF}) {
                     <th>Auxiliar</th>
                     <th>Pago</th>
                     <th>Subtotal</th>
-                    <th>Descuentos</th>
+                    <th>Ajustes</th>
+                    <th>Tipo de Ajuste</th>
                     <th>Motivo</th>
                     <th>Total</th>
                     <th>Abrir</th>
@@ -84,7 +85,8 @@ function TablaComisionChofer({rows, save, fn, fechaI, fechaF}) {
                     <td>{totalAux}</td>
                     <td>{fns.moneyFormat(pagoAux)}</td>
                     <td>{fns.moneyFormat(totalSubtotal)}</td>
-                    <td>{fns.moneyFormat(totalDescuentos)}</td>
+                    <td></td>
+                    <td></td>
                     <td></td>
                     <td>{fns.moneyFormat(total)}</td>
                     <td></td>
@@ -95,3 +97,4 @@ function TablaComisionChofer({rows, save, fn, fechaI, fechaF}) {
 }
 
 export default TablaComisionChofer
+//{fns.moneyFormat(totalDescuentos)}

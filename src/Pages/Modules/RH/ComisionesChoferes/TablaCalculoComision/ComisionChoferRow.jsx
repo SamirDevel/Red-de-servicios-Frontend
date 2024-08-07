@@ -1,24 +1,28 @@
 import { useState, useEffect } from "react"
 import { fns } from "../../../../../Functions"
 import InputCantidad from "../../../../../Components/InputCantidad"
+import AddSubstract from "../../../../../Components/AddSubstract"
 
 function ComisionChoferRow({raw, totDes, tot, save, fn}){
     const [subtotal, setSubtotal] = useState(0)
-    const [descuento, setDescuento] = useState(0)
+    const [ajuste, setAjuste] = useState(0)
     const [total, setTotal] = useState(0)
     const [motivo, setMotivo] = useState('')
+    const [operation, setOperaton] = useState('')
 
     useEffect(()=>{
         setSubtotal(raw.TOTALF+raw.TOTALJ+raw.TOTALL+raw.TOTALA)
     }, [raw])
 
     useEffect(()=>{
-        setTotal(subtotal-descuento);
-    }, [subtotal, descuento])
+        if(operation==='-')setTotal(subtotal-ajuste);
+        if(operation==='+')setTotal(subtotal+ajuste);
+        if(operation==='')setTotal(subtotal);
+    }, [subtotal, ajuste, operation])
     useEffect(()=>{
-        raw.descuento = descuento;
+        raw.recalculo = ajuste;
         totDes()
-    }, [descuento])
+    }, [ajuste])
     useEffect(()=>{
         raw.totalApagar = total;
         tot()
@@ -36,10 +40,19 @@ function ComisionChoferRow({raw, totDes, tot, save, fn}){
             auxiliar:raw.AUXILIAR,
             pagadoAuxiliar:raw.TOTALA,
             totalApagar:total,
-            descuentos:descuento,
+            recalculo:ajuste,
+            //subtotal,
+            tipoRecalculo:operation,
             motivo
         }
         fn(obj)
+    }
+
+    function handdleAdd(){
+        setOperaton('+')
+    }
+    function handdleSubstract(){
+        setOperaton('-')
     }
 
     return (
@@ -57,7 +70,10 @@ function ComisionChoferRow({raw, totDes, tot, save, fn}){
             <td>{fns.moneyFormat(raw.TOTALA)}</td>
             <td>{fns.moneyFormat(subtotal)}</td>
             <td>
-                <InputCantidad type='number' value={descuento} fn={setDescuento}/>
+                <InputCantidad type='number' value={ajuste} fn={setAjuste}/>
+            </td>
+            <td>
+                <AddSubstract add={handdleAdd} substract={handdleSubstract}/>
             </td>
             <td>
                 <textarea cols="20" rows="1" value={motivo} onChange={e=>setMotivo(e.target.value)}/>
