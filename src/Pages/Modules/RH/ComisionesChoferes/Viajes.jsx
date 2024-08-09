@@ -5,6 +5,7 @@ import Table from "../../../../Components/Table V2";
 import PrintButtonIcon from '../../../../Components/PrintButtonIcon'
 import makePDFCompleto from "../../CYC/Viajes/VistaPDF.JS";
 import { viajesFns } from "../../../../Components/Viajes/Functions";
+import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
 
 function Viajes() {
     const [viajes, setVIajes] = useState([]);
@@ -52,7 +53,7 @@ function Viajes() {
         setViajesPDF()
     },[viajes])
 
-    function handdleExport(){
+    function makeExcell(){
         const columns = [
             {header:'Viaje',key:'VIAJE'},
             {header:'Vehiculo', key:'VEHICULO'},
@@ -62,6 +63,9 @@ function Viajes() {
         ]
         const rows = objetos.map(obj=>obj)
         return {columns, rows}
+    }
+    function handdleExport(name){
+        fns.exportToExcell(()=>makeExcell(), name);
     }
     return (
         <div className="flex flex-col justify-center items-center">
@@ -78,7 +82,7 @@ function Viajes() {
                 <label>{`Desde ${params['fechaI']} hasta ${params['fechaF']}`}</label>
             </div>
             <br />
-            <Table theme='bg-blue-950 text-white' colsHeads={heads} list={objetos} manage={setObjetos} handdleExport={handdleExport}/>
+            <Table theme='bg-blue-950 text-white' colsHeads={heads} list={objetos} manage={setObjetos} handdleExport={handdleExport} icon={<PiMicrosoftExcelLogoFill size={45} className="green"/>}/>
         </div>
     )
 }

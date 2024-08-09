@@ -3,10 +3,12 @@ import FiltrosComision from '../FiltrosComision'
 import { fns } from '../../../../Functions'
 import Table from '../../../../Components/Table V2'
 import OpenBtn from '../../../../Components/OpenButtonIcon'
-import Input from '../../../../Components/Input'
 import TablaComisionChofer from './TablaCalculoComision'
 import { GrHide } from "react-icons/gr";
 import IconButton from '../../../../Components/IconButton'
+import { FaRegFilePdf } from 'react-icons/fa'
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 function ComisionChofer() {
     const [inicio, setInicio] = useState('')
@@ -37,11 +39,13 @@ function ComisionChofer() {
         {text:'Auxiliar',type:'string'},
         {text:'Pago',type:'pesos'},
         {text:'Subtotal',type:'pesos'},
-        {text:'Descuentos',type:'pesos'},
+        {text:'Ajuste',type:'pesos'},
+        {text:'Tipo\nde\nde\nAjuste',type:'string'},
         {text:'Motivo',type:'string'},
         {text:'Total',type:'pesos'},
         {text:'Abrir',type:'string'},
     ]
+
     useEffect(()=>{
         async function getData(){
             const respuesta = await Promise.all([
@@ -118,6 +122,11 @@ function ComisionChofer() {
     function getUrl(chofer, fechaI, fechaF, tipo){
         return `${window.location.href}/desgloce/${chofer}/${fechaI}/${fechaF}/${tipo}`
     }
+    function tipoRecCad(char=''){
+        if(char==='+')return 'Bono'
+        if(char==='-')return 'Descuento'
+        if(char==='')return 'No\Registrado'
+    }
     function setObjetosGuardados(array, counters, fechaI, fechaF){
         setObjetos(array.map((item)=>{
             const TOTALF = item['pagadoForaneos'];
@@ -128,10 +137,11 @@ function ComisionChofer() {
             const tipoRecalculo = item['tipoRecalculo'];
             const recalculo = item['recalculo'];
             const total = (()=>{
-                if(tipoRecalculo==='')return 0
+                if(tipoRecalculo==='')return subtotal
                 else if(tipoRecalculo==='+')return subtotal + recalculo
                 else if(tipoRecalculo==='-')return subtotal - recalculo
             })()
+            const tipoRec= tipoRecCad(tipoRecalculo)
             counters.contF += TOTALF;
             counters.contJ += TOTALJ;
             counters.contL += TOTALL;
@@ -159,11 +169,82 @@ function ComisionChofer() {
                 TOTALA,
                 SUBTOTAL:subtotal,
                 RECALCULOS:item['recalculo'],
+                TIPOREC:tipoRec,
                 MOTIVO:item['motivo'],
                 TOTAL:total,
                 BTN:<OpenBtn size={28} url={getUrl(item.codigo!==undefined?item.codigo:item.chofer, fechaI, fechaF, item['tipo'])}/>
             }
         }))
+    }
+    async function makePDF(nombre){
+        const doc = new jsPDF('l', 'mm', 'a4');
+        doc.orientation="landscape";
+        doc.setFontSize(12);
+        const string = 'GRUPO CMP'
+        doc.text(string, 40, 16);
+        doc.text(`Comisiones pagadas del ${inicio} al ${final}`, 80, 16);
+        let yAxis = 23;
+        const logo = new Image();
+        logo.src = '/Public/CMP image 2.png';
+        let vjF=0, toF=0, vjJ=0, toJ=0, vjL=0, toL=0, vjA=0, toA=0, vjV=0, sb=0, to=0
+        const data = objetos.map(obj=>{
+            const {
+                CODIGO, NOMBRE, FORANEOS, TOTALF, JALISCO, TOTALJ,
+                LOCALES, TOTALL, VIAJES, AUXILIAR, TOTALA, SUBTOTAL, 
+                RECALCULOS, TIPOREC, MOTIVO, TOTAL
+            } = obj
+            const cad = fns.splitByWords(MOTIVO,' ', 5)
+            vjF+=FORANEOS
+            toF+=TOTALF
+            vjJ+=JALISCO
+            toJ+=TOTALJ
+            vjL+=LOCALES
+            toL+=TOTALL
+            vjA+=AUXILIAR
+            toA+=TOTALA
+            vjV+=VIAJES
+            sb+=SUBTOTAL
+            to+=TOTAL
+            return [
+                CODIGO, NOMBRE, FORANEOS, fns.moneyFormat(TOTALF), JALISCO, fns.moneyFormat(TOTALJ),
+                LOCALES, fns.moneyFormat(TOTALL), VIAJES, AUXILIAR, fns.moneyFormat(TOTALA), 
+                fns.moneyFormat(SUBTOTAL), fns.moneyFormat(RECALCULOS),TIPOREC,  cad, fns.moneyFormat(TOTAL)
+            ]
+        })
+        data.push([
+            'TOTALES', '', vjF, fns.moneyFormat(toF), vjJ, fns.moneyFormat(toJ), vjL, fns.moneyFormat(toL), vjV, vjA, fns.moneyFormat(toA), fns.moneyFormat(sb), '', '', '', fns.moneyFormat(to)
+        ])
+        doc.addImage(logo,'JPG',5,5,35,35);
+        doc.autoTable({
+            head:[[
+                'Codigo',
+                'Nombre',
+                'Foraneos',
+                'Pago',
+                'A\nJalisco',
+                'Pago',
+                'Locales',
+                'Pago',
+                'Viajes',
+                'Auxiliar',
+                'Pago',
+                'Subtotal',
+                'Ajustes',
+                'Tipo\nde\nAjuste',
+                'Motivo',
+                'Total',
+            ]],
+            body: data,
+            startY: yAxis<42?42:yAxis+7,
+            styles:{
+              fontSize: 8,
+              width: 'fit-content',
+              valign: 'middle',
+              halign : 'center',
+              cellWidth: 'wrap'
+          },
+          });
+        window.open(doc.output("bloburl", {filename:nombre}), "Carta", "width=inherit, height=0");
     }
     function setObjetosNoGuardados(array, counters, fechaI, fechaF){
         setObjetos(array.map(item=>{
@@ -254,6 +335,7 @@ function ComisionChofer() {
                 contS:conts.contS,
                 c:'',
                 d:'',
+                e:'',
                 contT:conts.contT
             }
         ])
@@ -284,7 +366,7 @@ function ComisionChofer() {
             const newTotals = totales.map(total=>{
                 return {extra:'', ...total}
             })
-            return <Table  theme='bg-blue-950 text-white w-1' colsHeads={comisionHeads} list={objetos} manage={setObjetos} foots={newTotals}/>
+            return <Table  theme='bg-blue-950 text-white w-1' colsHeads={comisionHeads} list={objetos} manage={setObjetos} foots={newTotals} icon={<FaRegFilePdf size={70} className='redHover'/>} handdleExport={makePDF}/>
         }
     }
 
