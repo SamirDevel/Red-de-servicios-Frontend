@@ -151,11 +151,11 @@ export function find(array, criteria, value,toFind){
     }
     return -1;
 }
-export function findCoincidences(array=[], value, compare){
+export async function findCoincidences(array=[], value, compare){
     const result = new Array();
     for(const element of array){
         const isMatch = compare!==undefined
-            ?compare(value, element)
+            ?await compare(value, element)
             :value===element
         if(isMatch)result.push(element);
     }

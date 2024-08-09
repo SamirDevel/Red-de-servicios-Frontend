@@ -8,7 +8,7 @@ import IconButton from "../IconButton"
 import Pagination from "./Pagination"
 import DownloadModal from "../DownloadModal"
 
-function Table({colsHeads, list, theme, foots, manage, handdleExport, icon, aftherRendered, limit}) {
+function Table({colsHeads, list, theme, foots, manage, handdleExport, icon, aftherRendered, limit, foreingCompare}) {
     const [displayed, setDisplayed] = useState([]);
     const [page, setPage] = useState(0)
     const [paginated, setPaginated] = useState([])
@@ -79,14 +79,15 @@ function Table({colsHeads, list, theme, foots, manage, handdleExport, icon, afth
         setIsFiltred(flag)
     }
 
-    function compare(toFind, option){
+    async function compare(toFind, option){
         const keys = Object.keys(option)
-        for(const key of keys){
+        const promises = keys.map(async (key)=>{
             const optionStr = option[key].toString()
             const flag = optionStr.includes(toFind);
-            if(flag)return true;
-        }
-        return false
+            return flag
+        })
+        const results = await Promise.all(promises);
+        return results.includes(true)
     }
 
     return (
@@ -97,7 +98,7 @@ function Table({colsHeads, list, theme, foots, manage, handdleExport, icon, afth
             <span className="my-2"/>
             {isExportable()}
             <span className="my-2"/>
-            <Pagination elements={list} result={paginate} limit={selfLimit} filter={filter} compare={compare}>  
+            <Pagination elements={list} result={paginate} limit={selfLimit} filter={filter} compare={foreingCompare!==undefined?foreingCompare:compare}>  
                 <DragDropContext onDragEnd={onDragEnd}>
                     <table className="mx-1 select-none">
                         <Thead theme={`${theme}`} heads={colsHeads} clicked={handleClickHead}/>

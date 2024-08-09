@@ -6,14 +6,17 @@ function Searchbar({list, result, compare}) {
   const [value, setValue] = useState('');
   const [coincidences, setCoincidences] = useState(0)
   useEffect(()=>{
-    if(value!==''){
-      const array = fns.findCoincidences(list, value, compare);
-      setCoincidences(array.length);
-      result(array, true)
-    }else{
-      setCoincidences(0)
-      result([], false)
+    async function search() {
+      if(value!==''){
+        const array = await fns.findCoincidences(list, value, compare);
+        setCoincidences(array.length);
+        result(array, true)
+      }else{
+        setCoincidences(0)
+        result([], false)
+      }
     }
+    search()
   }, [value])
   return (
     <div className=' border-4 border-black rounded-full h-8 flex flex-row items-center'>
