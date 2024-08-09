@@ -4,16 +4,13 @@ import Input from './Input'
 import IconButton from './IconButton'
 import { MdCancel } from 'react-icons/md'
 import { FaFileDownload } from 'react-icons/fa'
-import { saveAs } from 'file-saver'
 
-function DownloadWindow({icon, getBuffer, closefn}){
+function DownloadWindow({icon, download, closefn}){
     const [name, setName] = useState('')
     async function save(){
         if(name==='')alert('Debe elegir el nombre del archivo');
         else{
-            const blob=await getBuffer()
-            console.log(blob)
-            saveAs(blob, name)
+            download(name)
             closefn()
         }
     }
@@ -34,9 +31,9 @@ function DownloadWindow({icon, getBuffer, closefn}){
 
     </div>
 }
-function DownloadModal({bufferFn, icon, isOpen, closefn}) {
+function DownloadModal({downloadFn, icon, isOpen, closefn}) {
     return (
-        <Modal isOpen={isOpen}  component={<DownloadWindow icon={icon} closefn={closefn} getBuffer={bufferFn}/>}/>
+        <Modal isOpen={isOpen}  component={<DownloadWindow icon={icon} closefn={closefn} download={downloadFn}/>}/>
     )
 }
 

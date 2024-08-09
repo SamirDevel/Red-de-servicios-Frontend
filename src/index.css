@@ -58,3 +58,6 @@ th, td{
   height:100%;
 }
 
+.unset{
+  all: unset;
+}

@@ -1,6 +1,8 @@
 import clienteAxios from "./Config/axios";
 import store from "./store";
 import { loading, done } from "./LoadModalSlice";
+import ExcelJS from 'exceljs'
+import { saveAs } from "file-saver";
 
 let idSes=0; 
 //#region Manejo de sesiones (pasar a Axios)
@@ -124,6 +126,24 @@ export function quicksort(array, criterio, reversed=false){
     return quicksort(left,criterio, reversed).concat(array[0], quicksort(right, criterio, reversed));
 }
 
+export function binarySearch(value, array=[], startIndex=0, endIndex=0, equalTo, higherThan){
+    if(startIndex>endIndex)return -1;
+    const middleIndex = ((endIndex-startIndex)/2)+startIndex;
+    const option = array[middleIndex];
+    const finded = equalTo!==undefined
+        ?equalTo(value, option)
+        :option===value
+    if(finded)return middleIndex;
+    else{
+        const isHigher = higherThan!==undefined
+            ?higherThan(value, option)
+            :option>value
+        return isHigher
+            ?binarySearch(value, array, middleIndex+1, endIndex, equalTo, higherThan)
+            :binarySearch(value, array, startIndex, middleIndex-1, equalTo, higherThan)
+    }
+}
+
 export function find(array, criteria, value,toFind){
     const end = array.length;
     for(let i=0;i<end; i++){
@@ -131,19 +151,16 @@ export function find(array, criteria, value,toFind){
     }
     return -1;
 }
-  
-export function reversequicksort(array, criterio) {
-    if (array.length <= 1) {
-      return array;
+export function findCoincidences(array=[], value, compare){
+    const result = new Array();
+    for(const element of array){
+        const isMatch = compare!==undefined
+            ?compare(value, element)
+            :value===element
+        if(isMatch)result.push(element);
     }
-    const pivot = array[0][criterio];
-    const left = []; 
-    const right = []
-    for (let i = 1; i < array.length; i++) {
-      array[i][criterio] > pivot ? right.push(array[i]) : left.push(array[i]);
-    }
-    return reversequicksort(right,criterio).concat(array[0], reversequicksort(left, criterio));
-};
+    return result
+}
 //#endregion
 //alerta de arreglo de errores
 export function alertar(errores=[]){
@@ -256,5 +273,43 @@ export function inArray(array=[], callback, value){
         if(callback(item)===value)return true
     }
     return false
+}
+
+export async function exportToExcell(getData, name){
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet1')
+    const {columns, rows} = getData();
+    worksheet.columns = columns.map(head=>{
+        return {
+            ...head, width:10
+        }
+        
+    })
+    //const keys = Object.keys(list[0])
+    for(const row of rows){
+        worksheet.addRow(row)
+    }
+    
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    saveAs(blob, name)
+    //console.log(worksheet)
+}
+export function splitByWords(str='', char='', limit=0){
+    const array = str.split(char);
+    const end = array.length;
+    let result = '';
+    for(let i=0, cont=1; i<end; i++){
+        const element = array[i];
+        if(cont<=limit){
+            result = result.concat(' ')
+            cont++
+        }else{
+            result = result.concat('\n')
+            cont=1;
+        }
+        result = result.concat(element);
+    }
+    return result
 }
 export * as fns from './Functions.js'

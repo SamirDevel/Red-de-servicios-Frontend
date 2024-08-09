@@ -3,24 +3,38 @@ import Thead from "./Thead"
 import Tbody from "./Tbody"
 import Tfoot from "./Tfoot"
 import { DragDropContext } from "react-beautiful-dnd"
-import { fns } from "../../Functions"
+import { compare, fns } from "../../Functions"
 import IconButton from "../IconButton"
-import { PiMicrosoftExcelLogoFill } from "react-icons/pi";
-import ExcelJS from 'exceljs'
 import Pagination from "./Pagination"
 import DownloadModal from "../DownloadModal"
 
-function Table({colsHeads, list, theme, foots, manage, handdleExport, aftherRendered, limit}) {
+function Table({colsHeads, list, theme, foots, manage, handdleExport, icon, aftherRendered, limit}) {
     const [displayed, setDisplayed] = useState([]);
     const [page, setPage] = useState(0)
+    const [paginated, setPaginated] = useState([])
+    const [filtred, setFiltred] = useState([])
+    const [isFiltred, setIsFiltred] = useState(false)
     const [selfLimit, setSelfLimit] = useState(limit!==undefined?limit:30);
-    const [isDownladin, setIsDownloading] = useState(false)
+    const [isDownlading, setIsDownloading] = useState(false)
     useEffect(()=>{
         //console.log(list)
     }, [list])
     useEffect(()=>{
         if(aftherRendered)aftherRendered()
     },[displayed])
+    useEffect(()=>{
+        setDisplayed(paginated)
+        //setSelfLimit(limit)
+    }, [paginated])
+    useEffect(()=>{
+        if(isFiltred){
+            setDisplayed(filtred)
+            //setSelfLimit(filtred.length)
+        }else{
+            setDisplayed(paginated)
+            //setSelfLimit(limit)
+        }
+    }, [filtred])
 
     function handleClickHead(index, reversed){
         if(displayed.length>0){
@@ -48,49 +62,42 @@ function Table({colsHeads, list, theme, foots, manage, handdleExport, aftherRend
         setDisplayed([])
         manage(reorderedItems);
     }
-
-    async function exportToExcell(){
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Sheet1')
-        const {columns, rows} = handdleExport();
-        worksheet.columns = columns.map(head=>{
-            return {
-                ...head, width:10
-            }
-            
-        })
-        //const keys = Object.keys(list[0])
-        for(const row of rows){
-            worksheet.addRow(row)
-        }
-        
-        const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-        return blob;
-        //console.log(worksheet)
-    }
     function isExportable(){
         return handdleExport !== undefined
             ?<>
-                <IconButton fn={()=>setIsDownloading(true)} id='icon' icon={<PiMicrosoftExcelLogoFill size={45} className="greenHover"/>}/>
+                <IconButton fn={()=>setIsDownloading(true)} id='icon' icon={icon}/>
             </>
             :<></>
     }
 
     function paginate(paginated, page){
-        setDisplayed(paginated),
+        setPaginated(paginated),
         setPage(page)
+    }
+    function filter(array=[], flag){
+        setFiltred(array);
+        setIsFiltred(flag)
+    }
+
+    function compare(toFind, option){
+        const keys = Object.keys(option)
+        for(const key of keys){
+            const optionStr = option[key].toString()
+            const flag = optionStr.includes(toFind);
+            if(flag)return true;
+        }
+        return false
     }
 
     return (
         <div className=" flex flex-col items-end">
             {(()=>{
-                if(isDownladin===true)return <DownloadModal isOpen={isDownladin} bufferFn={exportToExcell} closefn={()=>setIsDownloading(false)} icon={<PiMicrosoftExcelLogoFill size={45} className="green"/>}/>
+                if(isDownlading===true)return <DownloadModal isOpen={isDownlading} downloadFn={handdleExport} closefn={()=>setIsDownloading(false)} icon={icon}/>
             })()}
             <span className="my-2"/>
             {isExportable()}
             <span className="my-2"/>
-            <Pagination elements={list} result={paginate} limit={selfLimit}>  
+            <Pagination elements={list} result={paginate} limit={selfLimit} filter={filter} compare={compare}>  
                 <DragDropContext onDragEnd={onDragEnd}>
                     <table className="mx-1 select-none">
                         <Thead theme={`${theme}`} heads={colsHeads} clicked={handleClickHead}/>
