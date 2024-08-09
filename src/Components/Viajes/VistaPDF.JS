@@ -31,8 +31,7 @@ function getTotales(docs){
 
 export  default function makePDF(viaje)
 {
-    const doc = new jsPDF('l', 'mm', 'a4');
-    doc.orientation="landscape";
+    const doc = new jsPDF('landscape', 'mm', 'a4');
     doc.setFontSize(35);
     const logo = new Image();
     logo.src = '/Public/CMP image 2.png';
