@@ -7,6 +7,8 @@ import Predictive from '../../../../Components/Predictive'
 import Table from '../../../../Components/Table V2'
 import IconButton from '../../../../Components/IconButton'
 import * as Functions from '../../../../Functions.js'
+import { PiMicrosoftExcelLogoFill } from 'react-icons/pi'
+
 function SaldoPendeinte() {
   //consts
   const colsHeads = [
@@ -230,7 +232,7 @@ function SaldoPendeinte() {
     const invalid = (compare!==undefined?compare:'');
     return value==invalid?'':`${key}=${value}&`
   }
-  function handdleExport(array){
+  function makeExcell(array){
     const columns = [
       {header:'No.', key:'NO'},
       {header:'Codigo', key:'CODIGO'},
@@ -252,6 +254,9 @@ function SaldoPendeinte() {
     })
     //console.log(rows)
     return {columns, rows}
+  }
+  function handdleExport(array, name){
+    Functions.exportToExcell(()=>makeExcell(array), name);
   }
   return (
     <div className='flex flex-col'>
@@ -335,10 +340,10 @@ function SaldoPendeinte() {
         </div>
       </div>
       <div className={`flex flex-col mx-32 text-sm items-center ${(reduced==true||ignored.length>0)?'hidden':'visible'}`}>
-        <Table theme='bg-blue-950 text-white' colsHeads={colsHeads} list={objetos} manage={setObjetos} handdleExport={()=>handdleExport(objetos)}/>
+        <Table theme='bg-blue-950 text-white' colsHeads={colsHeads} list={objetos} manage={setObjetos} handdleExport={(name)=>handdleExport(objetos,name)} icon={<PiMicrosoftExcelLogoFill size={45} className="green"/>}/>
       </div>
       <div className={`flex flex-col mx-32 text-sm items-center ${(reduced==true||ignored.length>0)?'visible':'hidden'}`}>
-        <Table theme='bg-blue-950 text-white' colsHeads={colsHeads} list={filtred} manage={setFiltred} handdleExport={()=>handdleExport(filtred)}/>
+        <Table theme='bg-blue-950 text-white' colsHeads={colsHeads} list={filtred} manage={setFiltred} handdleExport={(name)=>handdleExport(filtred, name)} icon={<PiMicrosoftExcelLogoFill size={45} className="green"/>}/>
       </div>
     </div>
   )

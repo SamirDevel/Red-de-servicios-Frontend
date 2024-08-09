@@ -5,6 +5,7 @@ import { fns } from '../../../../Functions'
 import PrintButtonIcon from '../../../../Components/PrintButtonIcon'
 import makePDFCompleto from '../../CYC/Viajes/VistaPDF.JS'
 import { viajesFns } from '../../../../Components/Viajes/Functions'
+import { PiMicrosoftExcelLogoFill } from 'react-icons/pi'
 
 function Rendimientos() {
     const heads = [
@@ -64,7 +65,7 @@ function Rendimientos() {
         if(viajes.length>0)getObjetos();
     }, [viajes])
 
-    function handdleExport(){
+    function makeExcell(){
         const columns = [
             {header:'Empresa', key:'EMPRESA'},
             {header:'Viaje', key:'VIAJE'},
@@ -85,13 +86,16 @@ function Rendimientos() {
 
         return {columns, rows}
     }
+    function handdleExport(name){
+        fns.exportToExcell(()=>makeExcell(), name);
+    }
 
     return (
         <div className=' flex flex-col items-center'>
             <br />
             <Filtros area={'logistica'} setDocs={setViajes}/>
             <br />
-            <Table  theme='bg-blue-950 text-white' colsHeads={heads} list={objetos} manage={setObjetos} limit={15} handdleExport={handdleExport}/>
+            <Table  theme='bg-blue-950 text-white' colsHeads={heads} list={objetos} manage={setObjetos} limit={15} handdleExport={handdleExport} icon={<PiMicrosoftExcelLogoFill size={45} className="green"/>}/>
         </div>
     )
 }

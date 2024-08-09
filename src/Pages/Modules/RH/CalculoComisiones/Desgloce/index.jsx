@@ -2,6 +2,8 @@ import { useParams } from "react-router-dom"
 import { useState, useEffect } from "react"
 import * as fns from '../../../../../Functions'
 import Table from "../../../../../Components/Table V2"
+import { PiMicrosoftExcelLogoFill } from "react-icons/pi"
+
 function index() {
   const params = useParams();
   const [agente, setAgente] = useState(undefined)
@@ -88,7 +90,7 @@ function index() {
     setObjetos(objetos)
   }, [objetos])
   
-  function handdleExport(){
+  function makeExcell(){
     const columns = [
       {header:'Factura', key:'FACTURA'},
       {header:'Cliente',key:'CLIENTE'},
@@ -106,6 +108,10 @@ function index() {
     ]
     const rows = objetos.map(obj=>obj)
     return {columns, rows}
+  }
+
+  function handdleExport(name){
+    fns.exportToExcell(()=>makeExcell(), name);
   }
 
 
@@ -127,7 +133,7 @@ function index() {
           )}
         </div>
       })()}
-      <Table  theme='bg-blue-950 text-white' colsHeads={comisionHeads} list={objetos} manage={setObjetos} handdleExport={handdleExport}/>
+      <Table  theme='bg-blue-950 text-white' colsHeads={comisionHeads} list={objetos} manage={setObjetos} handdleExport={handdleExport} icon={<PiMicrosoftExcelLogoFill size={45} className="green"/>}/>
     </div>
   )
 }

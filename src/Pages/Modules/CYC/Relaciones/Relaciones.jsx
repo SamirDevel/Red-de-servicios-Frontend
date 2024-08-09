@@ -9,6 +9,8 @@ import { BsFiletypePdf } from 'react-icons/bs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import Logo from '../../../../Components/Logo.jsx';
+import { PiMicrosoftExcelLogoFill } from 'react-icons/pi';
+
 function Relaciones() {
   //Partes para el componente Table
   const colsN = [
@@ -204,7 +206,7 @@ function Relaciones() {
     setCommits(texts)
     setObjetos(result);
   }
-  function handdleExport(){
+  function makeExcell(){
     const columns = [
       {header:'No', key:'NO'},
       {header:'Fecha', key:'EXPEDICION'},
@@ -225,6 +227,9 @@ function Relaciones() {
     })
     //console.log(rows)
     return {columns, rows}
+  }
+  function handdleExport(name){
+    Functions.exportToExcell(()=>makeExcell(), name);
   }
   function recommit(){
     commits.forEach(commit=>{
@@ -288,7 +293,7 @@ function Relaciones() {
       </div>
       <br />
       <div className=' flex justify-center'>
-        <Table colsHeads={colsN} colsKeys={colsKeys} list={objetos} manage={handdleOrderObjetos} handdleExport={handdleExport} aftherRendered={recommit} limit={120}/>
+        <Table colsHeads={colsN} colsKeys={colsKeys} list={objetos} manage={handdleOrderObjetos} handdleExport={handdleExport} aftherRendered={recommit} limit={120} icon={<PiMicrosoftExcelLogoFill size={45} className="green"/>}/>
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ import Input from '../../../../Components/Input'
 import BlueBotton from '../../../../Components/BlueBotton'
 import { fns } from '../../../../Functions'
 import Table from '../../../../Components/Table V2'
+import { PiMicrosoftExcelLogoFill } from 'react-icons/pi'
 
 function VentasPeriodo() {
     const [fechaI, setFechaI] = useState('')
@@ -67,7 +68,7 @@ function VentasPeriodo() {
         console.log(buscado)
     },[buscado, objetos])
 
-    function handdleExport(){
+    function makeExcell(){
         const columns = [
             {header:'Factura', key:'FACTURA'},
             {header:'Expedicion', key:'EXPEDICION'},
@@ -88,6 +89,9 @@ function VentasPeriodo() {
         ]
         const rows = objetos.map(obj=>obj)
         return {columns, rows}
+    }
+    function handdleExport(name){
+        fns.exportToExcell(()=>makeExcell(), name);
     }
     return (
         <div className='flex flex-col items-center'>
@@ -115,7 +119,7 @@ function VentasPeriodo() {
             <span className='my-2'/>
             <BlueBotton text={'Buscar'} fn={()=>setBuscado(true)}/>
             <span className='my-2'/>
-            <Table  theme='bg-blue-950 text-white' colsHeads={Heads} list={objetos} manage={setObjetos} handdleExport={handdleExport}/>
+            <Table  theme='bg-blue-950 text-white' colsHeads={Heads} list={objetos} manage={setObjetos} handdleExport={handdleExport} icon={<PiMicrosoftExcelLogoFill size={45} className="green"/>}/>
         </div>
     )
 }
