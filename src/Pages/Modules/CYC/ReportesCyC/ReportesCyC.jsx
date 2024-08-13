@@ -7,7 +7,8 @@ import BlueBotton from '../../../../Components/BlueBotton'
 import * as Functions from '../../../../Functions.js'
 import Graficas from '../../../../Components/Graficas'
 import Select from '../../../../Components/Select';
-import Table from '../../../../Components/Table';
+import TableV2 from '../../../../Components/Table V2';
+import { PiMicrosoftExcelLogoFill } from 'react-icons/pi';
 import 'animate.css'
 
 function ReportesCyC() {
@@ -23,13 +24,32 @@ function ReportesCyC() {
     for(let i=1; i<=12; i++)array.push(`${i<10?'0':''}${i}`);
     return array;
   })();
-  const cobranzaHeads = ['Mes','A tiempo','%', 'Fuera de tiempo','%', 'Cobrado','%', 'No cobrado','%', 'Total','%'];
-  const vencidaHeads = ['Mes','Deuda Inicial', 'Cobrado', 'Cancelado', 'Deuda FInal'];
-  const promediosHeads = ['Mes','Promedio de Deuda', 'promedio de Vencimientos'];
-  const cobranzaKeys = ['MES', 'A_TIEMPO','A_TIEMPOP', 'FUERA_TIEMPO','FUERA_TIEMPOP', 'COBRADO', 'COBRADOP', 'PENDIENTE', 'PENDIENTEP', 'TOTAL','TOTALP',];
-  const vencidaKeys = ['MES', 'DEUDA', 'RECUPERACION', 'CANCELADO', 'PERDIDO'];
-  const promediosKeys = ['MES','DEUDA', 'VENCIMIENTOS'];
-  const celsFunctions = [];
+  const cobranzaHeads =[
+    {text: 'Mes ' , type: 'string'},
+    {text: 'Cobrado\na\nTiempo' , type: 'pesos'},
+    {text: '%' , type: '%'},
+    {text: 'Total' , type: 'pesos'},
+    {text: '%' , type: '%'},
+    {text: 'Cobrado' , type: 'pesos'},
+    {text: '%' , type: '%'},
+    {text: 'Fuera\nde\nTiempo' , type: 'pesos'},
+    {text: '%' , type: '%'},
+    {text: 'Pendiente' , type: 'pesos'},
+    {text: '%' , type: '%'},
+  ]
+
+  const vencidaHeads=[
+    {text: 'Mes' , type: 'string'},
+    {text: 'Deuda incial' , type: 'pesos'},
+    {text: 'Cobrado' , type: 'pesos'},
+    {text: 'Cancelado' , type: 'pesos'},
+    {text: 'Deuda final' , type: 'pesos'},
+  ]
+  const promediosHeads = [
+    {text:'Mes', type:'string'},
+    {text:'Promedio de Deuda', type:'string'},
+    {text:'promedio de Vencimientos', type:'string'}
+  ];
   //referencias
   const divRef = useRef(null);
   const divRef2 = useRef(null);
@@ -243,23 +263,23 @@ function ReportesCyC() {
                 const totalDiv = respuesta[0].totalPeriodo;
                 totalArray.push({
                   MES,
-                  TOTAL:Functions.moneyFormat(respuesta[0].totalPeriodo),
+                  A_TIEMPO:respuesta[0].aTiempoPeriodo,
+                  A_TIEMPOP: (respuesta[0].aTiempoPeriodo*100/totalDiv),
+                  TOTAL:respuesta[0].totalPeriodo,
                   TOTALP:100,
-                  COBRADO: Functions.moneyFormat(respuesta[0].cobradoPeriodo),
-                  COBRADOP: ((respuesta[0].cobradoPeriodo)*100/totalDiv).toFixed(2),
-                  A_TIEMPO: Functions.moneyFormat(respuesta[0].aTiempoPeriodo),
-                  A_TIEMPOP: (respuesta[0].aTiempoPeriodo*100/totalDiv).toFixed(2),
-                  FUERA_TIEMPO: Functions.moneyFormat(respuesta[0].fueraTiempoPeriodo),
-                  FUERA_TIEMPOP:((respuesta[0].fueraTiempoPeriodo)*100/totalDiv).toFixed(2),
-                  PENDIENTE: Functions.moneyFormat(respuesta[0].faltantePeriodo),
-                  PENDIENTEP:((respuesta[0].faltantePeriodo)*100/totalDiv).toFixed(2)
+                  COBRADO: respuesta[0].cobradoPeriodo,
+                  COBRADOP: ((respuesta[0].cobradoPeriodo)*100/totalDiv),
+                  FUERA_TIEMPO: respuesta[0].fueraTiempoPeriodo,
+                  FUERA_TIEMPOP: (respuesta[0].fueraTiempoPeriodo)*100/totalDiv,
+                  PENDIENTE: respuesta[0].faltantePeriodo,
+                  PENDIENTEP:((respuesta[0].faltantePeriodo)*100/totalDiv)
                 });
                 vencidasArray.push({
                   MES, 
-                  DEUDA:Functions.moneyFormat(respuesta[1].deudaInicial),
-                  RECUPERACION: Functions.moneyFormat(respuesta[1].cobrado),
-                  CANCELADO: Functions.moneyFormat(respuesta[1].cancelado),
-                  PERDIDO: Functions.moneyFormat(respuesta[1].deudaFinal)
+                  DEUDA:respuesta[1].deudaInicial,
+                  RECUPERACION:respuesta[1].cobrado,
+                  CANCELADO:respuesta[1].cancelado,
+                  PERDIDO: respuesta[1].deudaFinal
                 });
                 promediosArray.push({
                   MES,
@@ -295,8 +315,22 @@ function ReportesCyC() {
       }else alert(respuesta['mensaje'])
     }
   }
+  
+  function makeExcel(array=[], heads=[]){
+    const rows = array.map(obj=>obj)
+    const keys = Object.keys(array[0])
+    const columns = keys.map((key, index)=>{
+      return {key, header:heads[index].text}
+    })
+    return {rows, columns}
+  }
+
+  function onsubmit(e){
+    e.preventDefault()
+  }
+
   return (
-    <form className='flex flex-col'>
+    <form className='flex flex-col' onSubmit={onsubmit}>
       <div className='flex flex-row justify-evenly mt-3'>
         <div className='flex flex-col m-2'>
           <LabelSelect custom='flex-grow' text='Empresa:' fn={e=>setEmpresa(e.target.value)} value={empresa} list={['Central Mayorista de Páneles','Comercial Domos Copernico']}/>
@@ -429,13 +463,30 @@ function ReportesCyC() {
           <BlueBotton id='botonHistorico' text='Aplicar' fn={handleSubmitHistorico}/>
         </div>
           <div className={`m-2 ${(historico==1||historico==4)?'visible':'hidden'}`}>
-            <Table  theme='bg-blue-950 text-white' colsNames={cobranzaHeads} colsKeys={cobranzaKeys} values={historicoCobranza} manage={setHistoricoCobranza}/>
+            <TableV2  theme='bg-blue-950 text-white' icon={<PiMicrosoftExcelLogoFill size={45} className='green'/>} colsHeads={cobranzaHeads} list={historicoCobranza} manage={setHistoricoCobranza}
+            handdleExport={name=>{
+              Functions.exportToExcell(()=>{
+                return makeExcel(historicoCobranza, cobranzaHeads)
+              }, name)
+            }}/>
           </div>
           <div className={`m-2 ${(historico==2||historico==4)?'visible':'hidden'}`}>
-            <Table theme='bg-blue-950 text-white' colsNames={vencidaHeads} colsKeys={vencidaKeys} values={historicoVencida} manage={setHistoricoVencida}/>
+            <TableV2 theme='bg-blue-950 text-white' icon={<PiMicrosoftExcelLogoFill size={45} className='green'/>} colsHeads={vencidaHeads} list={historicoVencida} manage={setHistoricoVencida}
+            handdleExport={(name)=>{
+              Functions.exportToExcell(()=>{
+                return makeExcel(historicoVencida, vencidaHeads)
+              }, name)
+            }}
+            />
           </div>
           <div className={`m-2 ${(historico==3||historico==4)?'visible':'hidden'}`}>
-            <Table theme='bg-blue-950 text-white' colsNames={promediosHeads} colsKeys={promediosKeys} values={historicoPromedios} manage={setHistoricoPromedios}/>
+            <TableV2 theme='bg-blue-950 text-white' icon={<PiMicrosoftExcelLogoFill size={45} className='green'/>} colsHeads={promediosHeads} list={historicoPromedios} manage={setHistoricoPromedios}
+            handdleExport={(name)=>{
+              Functions.exportToExcell(()=>{
+                return makeExcel(historicoPromedios, promediosHeads)
+              }, name)
+            }}
+            />
           </div>
       </div>
     </form>
