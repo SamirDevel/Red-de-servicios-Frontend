@@ -1,6 +1,6 @@
 import {useState, useEffect, useRef} from 'react'
 import {BiDownArrow} from 'react-icons/bi';
-function CheckList(props) {
+function CheckList({visibility, fn, list, name, Key}) {
     //refs
     const divRef = useRef(null);
     const listRef = useRef(null);
@@ -22,7 +22,7 @@ function CheckList(props) {
     },[activeSuggestion]);
     
     useEffect(()=>{
-        props.visibility(!focus);
+        visibility(!focus);
     },[focus]);
     
     useEffect(()=>{
@@ -35,12 +35,12 @@ function CheckList(props) {
             box.checked =checkeds.some(el=>el===value?true:false);
             //
         }
-        props.fn(checkeds);
+        fn(checkeds);
     },[checkeds])
     //functions
     function navigateSuggestions(value){
         const newSugestion = activeSuggestion + value;
-        if(newSugestion>=0&&newSugestion<props.list.length)setActiveSuggestion(newSugestion);
+        if(newSugestion>=0&&newSugestion<list.length)setActiveSuggestion(newSugestion);
     }
     function handleCheck(flag,value){
         flag===true
@@ -51,7 +51,7 @@ function CheckList(props) {
         <div ref={divRef}>
             <div className = {`select-none hover:bg-cyan-600 ${focus==false?'border-solid border-black border-2':''} hover:text-white w-36`}
             onClickCapture={(e)=>{setFocus(!focus)}}>
-                <h3 className ='flex flex-row justify-evenly'>{props.name} <BiDownArrow className=' mt-1'/></h3>
+                <h3 className ='flex flex-row justify-evenly'>{name} <BiDownArrow className=' mt-1'/></h3>
             </div>
             <div tabIndex={0} ref={listRef} className={`${focus==true?'visible absolute h-40':'hidden'} overflow-auto bg-white`}
             onKeyDown={(e)=>{
@@ -70,7 +70,6 @@ function CheckList(props) {
                     //console.log(myRef.childNodes[1]);
                     myRef.childNodes[0].checked = !myRef.childNodes[0].checked;
                     handleCheck(myRef.childNodes[0].checked,myRef.childNodes[1]);
-                    //props.fn(e);
                 }
                 navigateSuggestions(Number);
             }}
@@ -84,8 +83,8 @@ function CheckList(props) {
                 //console.log(e.currentTarget);
             }}>
                 <ul ref={checkRefs} className=' select-none'>
-                    {props.list.map((item, i)=>{
-                        return <li key={`${i}-${props.list[i]}`} 
+                    {list.map((item, i)=>{
+                        return <li key={`${i}-${list[i]}`} 
                         className={`${
                             i==activeSuggestion?
                             'bg-blue-600 text-white rounded-2xl'
@@ -93,8 +92,8 @@ function CheckList(props) {
                             }`}
                             >
                             <label>
-                                <input type="checkbox" onChange={(e)=>handleCheck(e.target.checked,item[props.Key])}/>
-                                {item[props.Key]}
+                                <input type="checkbox" onChange={(e)=>handleCheck(e.target.checked,item[Key])}/>
+                                {item[Key]}
                             </label> 
                         </li>
                     })}
