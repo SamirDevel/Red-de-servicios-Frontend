@@ -3,7 +3,7 @@ import Thead from "./Thead"
 import Tbody from "./Tbody"
 import Tfoot from "./Tfoot"
 import { DragDropContext } from "react-beautiful-dnd"
-import { compare, fns } from "../../Functions"
+import { fns } from "../../Functions"
 import IconButton from "../IconButton"
 import Pagination from "./Pagination"
 import DownloadModal from "../DownloadModal"
@@ -27,13 +27,9 @@ function Table({colsHeads, list, theme, foots, manage, handdleExport, icon, afth
         //setSelfLimit(limit)
     }, [paginated])
     useEffect(()=>{
-        if(isFiltred){
-            setDisplayed(filtred)
-            //setSelfLimit(filtred.length)
-        }else{
-            setDisplayed(paginated)
-            //setSelfLimit(limit)
-        }
+        isFiltred
+            ?setDisplayed(filtred)
+            :setDisplayed(paginated)
     }, [filtred])
 
     function handleClickHead(index, reversed){
@@ -41,8 +37,10 @@ function Table({colsHeads, list, theme, foots, manage, handdleExport, icon, afth
             const keys = Object.keys(list[0]);
             const key = keys[index];
             const sorted = fns.quicksort(list,key,reversed)
-            setDisplayed([])
-            manage(sorted)
+            if(!isFiltred){
+                manage(sorted);
+                setDisplayed([]);
+            }
         }
     }
     function onDragEnd(result) {
@@ -59,8 +57,10 @@ function Table({colsHeads, list, theme, foots, manage, handdleExport, icon, afth
           origin,
           destination
         );
-        setDisplayed([])
-        manage(reorderedItems);
+        if(!isFiltred){
+            setDisplayed([])
+            manage(reorderedItems);
+        }
     }
     function isExportable(){
         return handdleExport !== undefined
