@@ -1,16 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import Input from "./Input";
-function Predictive(props) {
+function Predictive({list, change, Parameter, fn, Diferencer, value, id}) {
   //States
   const [suggestions, setSuggestions] = useState([]);
   const [activeSugestion, setActiveSuggestion] = useState(-1);
-  //console.log(props.list);
+  //console.log(list);
   //Reffs
   const optionRefs = useRef(null);
   //Effects
   useEffect(()=>{
     if(suggestions.length>0&&activeSugestion>-1)
-      props.change(suggestions[activeSugestion][props.Parameter]);
+      change(suggestions[activeSugestion][Parameter]);
       
       const container = optionRefs.current;
       const currentOption = container.children[activeSugestion];
@@ -27,8 +27,8 @@ function Predictive(props) {
   },[activeSugestion]);
   //functions
   function filter(key, value){
-    if(props.list.length>0){
-      const array = props.list.reduce((filtred,option)=>{
+    if(list.length>0){
+      const array = list.reduce((filtred,option)=>{
         if(option[key].indexOf(value) != -1)filtred.push(option);
         return filtred;
       },[])
@@ -49,9 +49,9 @@ function Predictive(props) {
           'bg-blue-600 text-white rounded-2xl'
           :'bg-white text-inherit'
           } hover:bg-blue-600 hover:text-white cursor-pointer pointer-events-auto select-auto`} 
-          key={`${suggestion[props.Parameter]}-${suggestion['id']}`}
-          onMouseDown={()=>{props.change(suggestions[index][props.Parameter]);props.fn()}}>
-            {props.Diferencer != undefined?`${suggestion[props.Parameter]}, ${suggestion[props.Diferencer]}`:suggestion[props.Parameter]}
+          key={`${suggestion[Parameter]}-${suggestion['id']}`}
+          onMouseDown={()=>{change(suggestions[index][Parameter]);fn()}}>
+            {Diferencer != undefined?`${suggestion[Parameter]}, ${suggestion[Diferencer]}`:suggestion[Parameter]}
         </div>
         ));
   }
@@ -63,7 +63,7 @@ function Predictive(props) {
       }}
       onFocus={(e)=>{
         if(e.target.value.length>0)
-          filter(props.Parameter,e.target.value.toUpperCase());
+          filter(Parameter,e.target.value.toUpperCase());
       }}
       onKeyDown={e=>{
         if(e.target.value.length>0){
@@ -75,18 +75,18 @@ function Predictive(props) {
     >
       <div>
         <Input fn={()=>{
-          if(props.value.length>0)activeSugestion>-1?props.change(suggestions[activeSugestion][props.Parameter]):props.change(suggestions[0][props.Parameter]);
-          props.fn()
+          if(value.length>0)activeSugestion>-1?change(suggestions[activeSugestion][Parameter]):change(suggestions[0][Parameter]);
+          fn()
         }} 
-        id={props.id} 
+        id={id} 
         change={e=>{
-          props.change(e.target.value);
-          filter(props.Parameter,e.target.value.toUpperCase());
+          change(e.target.value);
+          filter(Parameter,e.target.value.toUpperCase());
         }} 
-        value={props.value}
+        value={value}
         type='search'/>
       </div>
-      <div ref={optionRefs} className={`${props.value.length>0?'visible absolute z-20 bg-white h-40 overflow-auto':'hidden'}`}>
+      <div ref={optionRefs} className={`${value.length>0?'visible absolute z-20 bg-white h-40 overflow-auto':'hidden'}`}>
         {setList()}
       </div>
     </div>
